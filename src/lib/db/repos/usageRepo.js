@@ -136,6 +136,36 @@ export function resolveRecentRequestApiKey(apiKey, apiKeyMap = {}) {
   };
 }
 
+// Strip plaintext API keys from the byApiKey aggregate before it leaves the
+// server. Internally the plaintext key is used as the map key and stored in
+// `apiKey`/`apiKeyKey`, but the client only renders `keyName`. Re-key each entry
+// by the key's stable non-secret id (uuid for known keys, ••••last4 otherwise)
+// and drop the secret fields. Two distinct known keys keep distinct uuid ids, so
+// they stay distinct rows; only unknown keys sharing a ••••last4 fallback merge,
+// which is acceptable and no worse than the previous slice(0,8) label. (#1258)
+function sanitizeByApiKey(byApiKey, apiKeyMap = {}) {
+  const out = {};
+  for (const entry of Object.values(byApiKey || {})) {
+    const plain = typeof entry.apiKey === "string" && entry.apiKey ? entry.apiKey : null;
+    const info = plain ? apiKeyMap[plain] : null;
+    const apiKeyId = plain ? (info?.id || maskApiKey(plain)) : "local-no-key";
+    const keyName = plain ? (info?.name || maskApiKey(plain)) : (entry.keyName || "Local (No API Key)");
+    const outKey = `${apiKeyId}|${entry.rawModel || ""}|${entry.provider || ""}`;
+    const { apiKey, apiKeyKey, ...rest } = entry; // eslint-disable-line no-unused-vars
+    if (!out[outKey]) {
+      out[outKey] = { ...rest, apiKeyId, keyName };
+    } else {
+      const o = out[outKey];
+      o.requests += rest.requests || 0;
+      o.promptTokens += rest.promptTokens || 0;
+      o.completionTokens += rest.completionTokens || 0;
+      o.cost += rest.cost || 0;
+      if ((rest.lastUsed || "") > (o.lastUsed || "")) o.lastUsed = rest.lastUsed;
+    }
+  }
+  return out;
+}
+
 export function formatRecentRequest(entry, apiKeyMap = {}) {
   const t = entry.tokens || {};
   return {
@@ -652,6 +682,9 @@ export async function getUsageStats(period = "all") {
   }
 
   stats.totalRequests = Object.values(stats.byProvider).reduce((sum, p) => sum + (p.requests || 0), 0);
+  // Security (#1258): the byApiKey aggregate uses the plaintext key as map key
+  // and stores it in apiKey/apiKeyKey; strip it before returning to the client.
+  stats.byApiKey = sanitizeByApiKey(stats.byApiKey, apiKeyMap);
   return stats;
 }
 
