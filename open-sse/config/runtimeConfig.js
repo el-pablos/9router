@@ -31,9 +31,12 @@ export const MEMORY_CONFIG = {
   proxyDispatchersMaxSize: 20,
 };
 
-// Stream stall timeout: abort if no chunk received within this duration
-export const STREAM_STALL_TIMEOUT_MS = 30 * 1000;
-
+// Stream stall timeout: abort if no chunk received within this duration.
+// Kiro extended-thinking and large file writes can pause output for 60-120s
+// while Claude reasons or compiles a response, so 30s caused false "stall"
+// aborts mid-conversation. The agentic system prompt itself notes the Kiro
+// upstream has a 2-3 minute timeout, so we match that ceiling here.
+export const STREAM_STALL_TIMEOUT_MS = 180 * 1000;
 // Fetch connect timeout: abort if upstream doesn't return response headers within this duration
 export const FETCH_CONNECT_TIMEOUT_MS = 20 * 1000;
 
