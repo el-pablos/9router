@@ -1,4 +1,5 @@
 import { ProxyAgent, fetch as undiciFetch } from "undici";
+import { isSocksProxyUrl, createSocksDispatcher } from "open-sse/utils/socksDispatcher.js";
 
 const DEFAULT_TEST_URL = "https://google.com/";
 const DEFAULT_TIMEOUT_MS = 8000;
@@ -42,7 +43,9 @@ export async function testProxyUrl({ proxyUrl, testUrl, timeoutMs } = {}) {
 
   try {
     try {
-      dispatcher = new ProxyAgent({ uri: normalizedProxyUrl });
+      dispatcher = isSocksProxyUrl(normalizedProxyUrl)
+        ? createSocksDispatcher(normalizedProxyUrl)
+        : new ProxyAgent({ uri: normalizedProxyUrl });
     } catch (err) {
       return {
         ok: false,
