@@ -319,7 +319,6 @@ function convertOpenAIToolChoice(choice) {
       return choice;
     }
   }
-
   return { type: "auto" };
 }
 

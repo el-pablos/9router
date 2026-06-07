@@ -74,8 +74,7 @@ export function cloakClaudeTools(body) {
   }
 
   return {
-    body: cloakedBody,
-    toolNameMap: toolNameMap.size > 0 ? toolNameMap : null
+    body: cloakedBody,    toolNameMap: toolNameMap.size > 0 ? toolNameMap : null
   };
 }
 

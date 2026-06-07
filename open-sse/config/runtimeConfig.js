@@ -39,7 +39,6 @@ export const MEMORY_CONFIG = {
 export const STREAM_STALL_TIMEOUT_MS = 180 * 1000;
 // Fetch connect timeout: abort if upstream doesn't return response headers within this duration
 export const FETCH_CONNECT_TIMEOUT_MS = 60 * 1000;
-
 // Default token limits
 export const DEFAULT_MAX_TOKENS = 64000;
 export const DEFAULT_MIN_TOKENS = 32000;
