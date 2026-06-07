@@ -7,7 +7,19 @@ const projectRoot = dirname(fileURLToPath(import.meta.url));
 const tracingRoot = process.env.NEXT_TRACING_ROOT_MODE === "workspace"
   ? join(projectRoot, "..")
   : projectRoot;
-const proxyClientMaxBodySize = process.env.NINEROUTER_PROXY_CLIENT_MAX_BODY_SIZE || "128mb";
+
+export const DEFAULT_PROXY_CLIENT_MAX_BODY_SIZE = 256 * 1024 * 1024;
+
+export function resolveProxyClientMaxBodySize(value = process.env.NEXT_PROXY_CLIENT_MAX_BODY_SIZE) {
+  const raw = value == null ? "" : String(value).trim();
+  if (!raw) return DEFAULT_PROXY_CLIENT_MAX_BODY_SIZE;
+
+  const numericValue = Number(raw);
+  if (Number.isFinite(numericValue) && numericValue > 0) return numericValue;
+
+  // Next.js accepts strings like "50mb" and validates them during startup.
+  return raw;
+}
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -27,7 +39,7 @@ const nextConfig = {
   env: {},
   experimental: {
     // #1529/#1572: LLM clients can send long context or base64 image payloads through /v1 rewrites.
-    proxyClientMaxBodySize,
+    proxyClientMaxBodySize: resolveProxyClientMaxBodySize()
   },
   webpack: (config, { isServer }) => {
     // Ignore fs/path modules in browser bundle
