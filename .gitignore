@@ -72,3 +72,16 @@ ecosystem.config.*
 scripts/agSniffer/*
 gitbooks/*
 gitbook/README.md
+.worktrees/
+*.tmp
+*.bak
+tmp/
+TEMP/
+## secret scan
+gitleaks.toml
+trufflehog.json
+## screenshots
+screenshots/
+*.png
+*.jpg
+
