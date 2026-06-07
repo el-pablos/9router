@@ -225,8 +225,14 @@ async function getDispatcher(proxyUrl) {
     if (proxyDispatchers.size >= MEMORY_CONFIG.proxyDispatchersMaxSize) {
       proxyDispatchers.delete(proxyDispatchers.keys().next().value);
     }
-    const { ProxyAgent } = await import("undici");
-    proxyDispatchers.set(normalized, new ProxyAgent({ uri: normalized }));
+    // SOCKS proxies need a custom dispatcher — undici's ProxyAgent is HTTP-only.
+    if (isSocksProxyUrl(normalized)) {
+      const { createSocksDispatcher } = await import("./socksDispatcher.js");
+      proxyDispatchers.set(normalized, createSocksDispatcher(normalized));
+    } else {
+      const { ProxyAgent } = await import("undici");
+      proxyDispatchers.set(normalized, new ProxyAgent({ uri: normalized }));
+    }
   }
 
   return proxyDispatchers.get(normalized);
