@@ -1,76 +1,68 @@
-<div align="center">
-  <img src="./images/9router.png?1" alt="9Router Dashboard" width="800"/>
-  
-  # 9Router - FREE AI Router & Token Saver
-  
-  **Never stop coding. Save 20-40% tokens with RTK + auto-fallback to FREE & cheap AI models.**
-  
-  **Connect All AI Code Tools (Claude Code, Cursor, Antigravity, Copilot, Codex, Gemini, OpenCode, Cline, OpenClaw...) to 40+ AI Providers & 100+ Models.**
-  
-  [![npm](https://img.shields.io/npm/v/9router.svg)](https://www.npmjs.com/package/9router)
-  [![Downloads](https://img.shields.io/npm/dm/9router.svg)](https://www.npmjs.com/package/9router)
-  [![Docker Pulls](https://img.shields.io/docker/pulls/decolua/9router.svg?logo=docker&label=Docker%20pulls)](https://hub.docker.com/r/decolua/9router)
-  [![GHCR](https://img.shields.io/badge/GHCR-decolua%2F9router-blue?logo=github)](https://github.com/decolua/9router/pkgs/container/9router)
-  [![License](https://img.shields.io/npm/l/9router.svg)](https://github.com/decolua/9router/blob/main/LICENSE)
+# 9Router — Router AI & Penghematan Token
 
-  <a href="https://trendshift.io/repositories/22628" target="_blank"><img src="https://trendshift.io/api/badge/repositories/22628" alt="decolua%2F9router | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
-  
-  [🚀 Quick Start](#-quick-start) • [💡 Features](#-key-features) • [📖 Setup](#-setup-guide) • [🌐 Website](https://9router.com)
+**Jangan berhenti coding. Hemat 20-40% token dengan RTK + auto-fallback ke model AI gratis & murah.**
 
-  [🇻🇳 Tiếng Việt](./i18n/README.vi.md) • [🇨🇳 中文](./i18n/README.zh-CN.md) • [🇯🇵 日本語](./i18n/README.ja-JP.md) • [🇷🇺 Русский](./i18n/README.ru.md)
-</div>
+**Hubungkan semua tool AI CLI (Claude Code, Codex, OpenClaw, Cursor, Cline, Gemini, OpenCode...) ke 40+ Provider AI & 100+ Model.**
+
+[![npm](https://img.shields.io/npm/v/9router.svg)](https://www.npmjs.com/package/9router)
+[![Downloads](https://img.shields.io/npm/dm/9router.svg)](https://www.npmjs.com/package/9router)
+[![Docker Pulls](https://img.shields.io/docker/pulls/decolua/9router.svg?logo=docker&label=Docker%20pulls)](https://hub.docker.com/r/decolua/9router)
+[![GHCR](https://img.shields.io/badge/GHCR-el--pablos%2F9router-blue?logo=github)](https://github.com/el-pablos/9router/pkgs/container/9router)
+[![License](https://img.shields.io/npm/l/9router.svg)](https://github.com/el-pablos/9router/blob/main/LICENSE)
+
+[🚀 Mulai Cepat](#-mulai-cepat) • [💡 Fitur](#-fitur-utama) • [📖 Setup](#-panduan-setup) • [🌐 Website](https://9router.com)
 
 ---
 
-## 🤔 Why 9Router?
+## 🤔 Kenapa 9Router?
 
-**Stop wasting money, tokens and hitting limits:**
+**Hentikan pemborosan uang, token, dan batas limit:**
 
-- ❌ Subscription quota expires unused every month
-- ❌ Rate limits stop you mid-coding
-- ❌ Tool outputs (git diff, grep, ls...) burn tokens fast
-- ❌ Expensive APIs ($20-50/month per provider)
-- ❌ Manual switching between providers
+- ❌ Kuota langganan expired tapi tidak terpakai setiap bulan
+- ❌ Rate limit berhenti di tengah coding
+- ❌ Output tool (git diff, grep, ls...) burn token cepat
+- ❌ API mahal ($20-50/bulan per provider)
+- ❌ Switch manual antar provider
 
-**9Router solves this:**
+**9Router menyelesaikan ini:**
 
-- ✅ **RTK Token Saver** - Auto-compress tool_result content, save 20-40% tokens per request
-- ✅ **Maximize subscriptions** - Track quota, use every bit before reset
-- ✅ **Auto fallback** - Subscription → Cheap → Free, zero downtime
-- ✅ **Multi-account** - Round-robin between accounts per provider
-- ✅ **Universal** - Works with Claude Code, Codex, Cursor, Cline, any CLI tool
+- ✅ **RTK Token Saver** — Auto-compress konten tool_result, hemat 20-40% token per request
+- ✅ **Maksimalkan Langganan** — Track kuota, gunakan setiap bit sebelum reset
+- ✅ **Auto Fallback** — Subscription → Murah → Gratis, zero downtime
+- ✅ **Multi-Account** — Round-robin antar akun per provider
+- ✅ **Universal** — Berfungsi dengan Claude Code, Codex, Cursor, Cline, semua CLI tool
 
 ---
 
-## 🔄 How It Works
+## 🔄 Bagaimana 9Router Bekerja
 
 ```
 ┌─────────────┐
-│  Your CLI   │  (Claude Code, Codex, OpenClaw, Cursor, Cline...)
-│   Tool      │
+│  CLI Tool   │  (Claude Code, Codex, OpenClaw, Cursor, Cline...)
+│   Kamu      │
 └──────┬──────┘
        │ http://localhost:20128/v1
        ↓
 ┌─────────────────────────────────────────────┐
 │           9Router (Smart Router)            │
-│  • RTK Token Saver (cut tool_result tokens) │
+│  • RTK Token Saver (potong token tool_result)│
 │  • Format translation (OpenAI ↔ Claude)     │
 │  • Quota tracking                           │
 │  • Auto token refresh                       │
 └──────┬──────────────────────────────────────┘
        │
        ├─→ [Tier 1: SUBSCRIPTION] Claude Code, Codex, GitHub Copilot
-       │   ↓ quota exhausted
-       ├─→ [Tier 2: CHEAP] GLM ($0.6/1M), MiniMax ($0.2/1M)
-       │   ↓ budget limit
-       └─→ [Tier 3: FREE] Kiro, OpenCode Free, Vertex ($300 credits)
+       │   ↓ kuota habis
+       ├─→ [Tier 2: MURAH] GLM ($0.6/1M), MiniMax ($0.2/1M)
+       │   ↓ budget habis
+       └─→ [Tier 3: GRATIS] Kiro, OpenCode Free, Vertex ($300 credits)
 
-Result: Never stop coding, minimal cost + 20-40% token savings via RTK
+Hasil: Never stop coding, biaya minimal + hemat 20-40% token via RTK
 ```
 
 ---
 
-## ⚡ Quick Start
+## 🚀 Mulai Cepat
 
 **1. Install globally:**
 
@@ -79,1165 +71,431 @@ npm install -g 9router
 9router
 ```
 
-🎉 Dashboard opens at `http://localhost:20128`
+🎉 Dashboard terbuka di `http://localhost:20128`
 
-**2. Connect a FREE provider (no signup needed):**
+**2. Hubungkan provider GRATIS (tanpa signup):**
 
-Dashboard → Providers → Connect **Kiro AI** (free Claude unlimited) or **OpenCode Free** (no auth) → Done!
+Dashboard → Providers → Connect **Kiro AI** (free Claude unlimited) atau **OpenCode Free** (tanpa auth) → Selesai!
 
-**3. Use in your CLI tool:**
+**3. Gunakan di CLI tool kamu:**
 
 ```
-Claude Code/Codex/OpenClaw/Cursor/Cline Settings:
+Pengaturan Claude Code/Codex/OpenClaw/Cursor/Cline:
   Endpoint: http://localhost:20128/v1
-  API Key: [copy from dashboard]
+  API Key: [copy dari dashboard]
   Model: kr/claude-sonnet-4.5
 ```
 
-**That's it!** Start coding with FREE AI models.
+**Selesai!** Mulai coding dengan model AI GRATIS.
 
-**Alternative: run from source (this repository):**
-
-This repository package is private (`9router-app`), so source/Docker execution is the expected local development path.
+**Alternatif: jalankan dari source:**
 
 ```bash
-cp .env.example .env
-npm install
-PORT=20128 NEXT_PUBLIC_BASE_URL=http://localhost:20128 npm run dev
+git clone https://github.com/el-pablos/9router.git
+cd 9router
+npm install --legacy-peer-deps
+npm run dev
 ```
 
-Production mode:
+---
 
-```bash
-npm run build
-PORT=20128 HOSTNAME=0.0.0.0 NEXT_PUBLIC_BASE_URL=http://localhost:20128 npm run start
-```
+## 🛠️ Tool CLI yang Didukung
 
-Default URLs:
-- Dashboard: `http://localhost:20128/dashboard`
-- OpenAI-compatible API: `http://localhost:20128/v1`
+9Router mendukung semua tool AI CLI utama:
+
+| Tool | Status | Catatan |
+|------|--------|---------|
+| **Claude Code** | ✅ Tested | API key + OAuth |
+| **GitHub Copilot** | ✅ Tested | Via Codex CLI |
+| **Codex CLI** | ✅ Tested | OpenAI format |
+| **OpenClaw** | ✅ Tested | Universal |
+| **Cursor IDE** | ✅ Tested | HTTP proxy mode |
+| **Cline** | ✅ Tested | HTTP proxy mode |
+| **Continue / RooCode** | ✅ Tested | OpenAI compatible |
+| **OpenCode** | ✅ Tested | OpenAI compatible |
+| **Kilo Code** | ✅ Tested | HTTP proxy mode |
+| **Lintian** | ✅ Tested | HTTP proxy mode |
 
 ---
 
-## Video Guides
+## 🌐 Provider yang Didukung
 
-<div align="center">
+### 🔐 OAuth Providers (Login dengan Akun)
 
-<table>
-  <tr>
-    <td align="center" width="320">
-      <a href="https://www.youtube.com/watch?v=raEyZPg5xE0">
-        <img src="https://img.youtube.com/vi/raEyZPg5xE0/maxresdefault.jpg" alt="9Router Setup Tutorial" width="300"/>
-      </a><br/>
-      <b>🇺🇸 English</b><br/>
-      <sub>9Router + Claude Code FREE Setup<br/>by <a href="https://www.youtube.com/@BuildAIWithHamid">Build AI With Hamid</a></sub>
-    </td>
-    <td align="center" width="320">
-      <a href="https://www.youtube.com/watch?v=X69n5Lm06Yw">
-        <img src="https://img.youtube.com/vi/X69n5Lm06Yw/maxresdefault.jpg" alt="Tiết kiệm chi phí LLM với 9Router" width="300"/>
-      </a><br/>
-      <b>🇻🇳 Tiếng Việt</b><br/>
-      <sub>Tiết kiệm chi phí LLM cho OpenClaw với 9Router<br/>by <a href="https://www.youtube.com/c/M%C3%ACAIblog">Mì AI</a></sub>
-    </td>
-    <td align="center" width="320">
-      <a href="https://www.youtube.com/watch?v=o3qYCyjrFYg">
-        <img src="https://img.youtube.com/vi/o3qYCyjrFYg/maxresdefault.jpg" alt="Claude Code FREE Forever" width="300"/>
-      </a><br/>
-      <b>🇺🇸 English</b><br/>
-      <sub>Claude Code FREE Forever — Unlimited Models<br/>by <a href="https://www.youtube.com/@BuildAIWithHamid">Build AI With Hamid</a></sub>
-    </td>
-  </tr>
-  <tr>
-    <td align="center" width="320">
-      <a href="https://www.youtube.com/watch?v=Ttpc26m39Dw">
-        <img src="https://img.youtube.com/vi/Ttpc26m39Dw/maxresdefault.jpg" alt="Claude CLI Free Setup" width="300"/>
-      </a><br/>
-      <b>🇺🇸 English</b><br/>
-      <sub>Claude CLI Free Setup with 9Router 🚀<br/>by <a href="https://www.youtube.com/@CodeVerseSoban">CodeVerse Soban</a></sub>
-    </td>
-    <td align="center" width="320">
-      <a href="https://www.youtube.com/watch?v=G-5A_D5Pm6Y">
-        <img src="https://img.youtube.com/vi/G-5A_D5Pm6Y/maxresdefault.jpg" alt="Cài đặt OpenClaw Free A-Z" width="300"/>
-      </a><br/>
-      <b>🇻🇳 Tiếng Việt</b><br/>
-      <sub>Cài Đặt OpenClaw Free Từ A-Z + 9Router<br/>by <a href="https://www.youtube.com/@maigia">Mai Gia</a></sub>
-    </td>
-    <td align="center" width="320">
-      <a href="https://www.youtube.com/watch?v=JXmg8_gccgE">
-        <img src="https://img.youtube.com/vi/JXmg8_gccgE/maxresdefault.jpg" alt="FREE OpenClaw with Claude Opus" width="300"/>
-      </a><br/>
-      <b>🇺🇸 English</b><br/>
-      <sub>FREE OpenClaw + Claude Opus 4.6<br/>by <a href="https://www.youtube.com/@BuildAIWithHamid">Build AI With Hamid</a></sub>
-    </td>
-  </tr>
-</table>
+| Provider | Model | Biaya |
+|----------|-------|-------|
+| **Anthropic Claude** | claude-sonnet-4.5, claude-opus-4.7 | Pakai langgananmu |
+| **OpenAI** | GPT-4.5, GPT-4o | Pakai langgananmu |
+| **Google Gemini** | gemini-2.5-flash, gemini-2.5-pro | Pakai langgananmu |
+| **GitHub Copilot** | claude-sonnet via Codex | Pakai langgananmu |
 
-</div>
+### 🆓 Provider Gratis (Tanpa Auth)
 
-> 🎬 **Made a video about 9Router?** Submit a [Pull Request](https://github.com/decolua/9router/pulls) adding your video to this section — we'll merge it!
+| Provider | Model | Limit |
+|----------|-------|-------|
+| **Kiro AI** | claude-sonnet-4.5 + GLM-5 + MiniMax | Unlimited, FREE |
+| **OpenCode Free** | auto-fetch dari server | Tanpa auth |
+| **Vertex AI** | gemini-2.5-flash | $300 free credits (GCP baru) |
+
+### 🔑 Provider API Key (40+ model)
+
+| Provider | Mulai dari |
+|----------|-----------|
+| **GLM-5.1** | $0.6/1M tokens |
+| **MiniMax M2.7** | $0.20/1M tokens |
+| **Kimi K2.5** | $9/bulan flat |
+| **DeepSeek** | $0.1/1M tokens |
+| **Groq** | Free tier tersedia |
+| **Together AI** | Multi-model discount |
+| **OpenRouter** | 100+ model |
+| + 35+ provider lainnya |
 
 ---
 
-## 🛠️ Supported CLI Tools
-
-9Router works seamlessly with all major AI coding tools:
-
-<div align="center">
-  <table>
-    <tr>
-      <td align="center" width="120">
-        <img src="./public/providers/claude.png" width="60" alt="Claude Code"/><br/>
-        <b>Claude-Code</b>
-      </td>
-      <td align="center" width="120">
-        <img src="./public/providers/openclaw.png" width="60" alt="OpenClaw"/><br/>
-        <b>OpenClaw</b>
-      </td>
-      <td align="center" width="120">
-        <img src="./public/providers/codex.png" width="60" alt="Codex"/><br/>
-        <b>Codex</b>
-      </td>
-      <td align="center" width="120">
-        <img src="./public/providers/opencode.png" width="60" alt="OpenCode"/><br/>
-        <b>OpenCode</b>
-      </td>
-      <td align="center" width="120">
-        <img src="./public/providers/cursor.png" width="60" alt="Cursor"/><br/>
-        <b>Cursor</b>
-      </td>
-      <td align="center" width="120">
-        <img src="./public/providers/antigravity.png" width="60" alt="Antigravity"/><br/>
-        <b>Antigravity</b>
-      </td>
-    </tr>
-    <tr>
-      <td align="center" width="120">
-        <img src="./public/providers/cline.png" width="60" alt="Cline"/><br/>
-        <b>Cline</b>
-      </td>
-      <td align="center" width="120">
-        <img src="./public/providers/continue.png" width="60" alt="Continue"/><br/>
-        <b>Continue</b>
-      </td>
-      <td align="center" width="120">
-        <img src="./public/providers/droid.png" width="60" alt="Droid"/><br/>
-        <b>Droid</b>
-      </td>
-      <td align="center" width="120">
-        <img src="./public/providers/roo.png" width="60" alt="Roo"/><br/>
-        <b>Roo</b>
-      </td>
-      <td align="center" width="120">
-        <img src="./public/providers/copilot.png" width="60" alt="Copilot"/><br/>
-        <b>Copilot</b>
-      </td>
-      <td align="center" width="120">
-        <img src="./public/providers/kilocode.png" width="60" alt="Kilo Code"/><br/>
-        <b>Kilo Code</b>
-      </td>
-    </tr>
-  </table>
-</div>
-
----
-
-## 🌐 Supported Providers
-
-### 🔐 OAuth Providers
-
-<div align="center">
-  <table>
-    <tr>
-      <td align="center" width="120">
-        <img src="./public/providers/claude.png" width="60" alt="Claude Code"/><br/>
-        <b>Claude-Code</b>
-      </td>
-      <td align="center" width="120">
-        <img src="./public/providers/antigravity.png" width="60" alt="Antigravity"/><br/>
-        <b>Antigravity</b>
-      </td>
-      <td align="center" width="120">
-        <img src="./public/providers/codex.png" width="60" alt="Codex"/><br/>
-        <b>Codex</b>
-      </td>
-      <td align="center" width="120">
-        <img src="./public/providers/github.png" width="60" alt="GitHub"/><br/>
-        <b>GitHub</b>
-      </td>
-      <td align="center" width="120">
-        <img src="./public/providers/cursor.png" width="60" alt="Cursor"/><br/>
-        <b>Cursor</b>
-      </td>
-    </tr>
-  </table>
-</div>
-
-### 🆓 Free Providers
-
-<div align="center">
-  <table>
-    <tr>
-      <td align="center" width="150">
-        <img src="./public/providers/kiro.png" width="70" alt="Kiro"/><br/>
-        <b>Kiro AI</b><br/>
-        <sub>Claude 4.5 + GLM-5 + MiniMax<br/>Unlimited FREE</sub>
-      </td>
-      <td align="center" width="150">
-        <img src="./public/providers/opencode.png" width="70" alt="OpenCode Free"/><br/>
-        <b>OpenCode Free</b><br/>
-        <sub>No auth • Auto-fetch models<br/>Unlimited FREE</sub>
-      </td>
-      <td align="center" width="150">
-        <img src="./public/providers/gemini.png" width="70" alt="Vertex AI"/><br/>
-        <b>Vertex AI</b><br/>
-        <sub>Gemini 3 Pro + GLM-5 + DeepSeek<br/>$300 credits free</sub>
-      </td>
-    </tr>
-  </table>
-</div>
-
-> **Note:** iFlow, Qwen and Gemini CLI free tiers were discontinued in 2026. Use Kiro / OpenCode Free / Vertex instead.
-
-### 🔑 API Key Providers (40+)
-
-<div align="center">
-  <table>
-    <tr>
-      <td align="center" width="100">
-        <img src="./public/providers/openrouter.png" width="50" alt="OpenRouter"/><br/>
-        <sub>OpenRouter</sub>
-      </td>
-      <td align="center" width="100">
-        <img src="./public/providers/glm.png" width="50" alt="GLM"/><br/>
-        <sub>GLM</sub>
-      </td>
-      <td align="center" width="100">
-        <img src="./public/providers/kimi.png" width="50" alt="Kimi"/><br/>
-        <sub>Kimi</sub>
-      </td>
-      <td align="center" width="100">
-        <img src="./public/providers/minimax.png" width="50" alt="MiniMax"/><br/>
-        <sub>MiniMax</sub>
-      </td>
-      <td align="center" width="100">
-        <img src="./public/providers/openai.png" width="50" alt="OpenAI"/><br/>
-        <sub>OpenAI</sub>
-      </td>
-      <td align="center" width="100">
-        <img src="./public/providers/anthropic.png" width="50" alt="Anthropic"/><br/>
-        <sub>Anthropic</sub>
-      </td>
-    </tr>
-    <tr>
-      <td align="center" width="100">
-        <img src="./public/providers/gemini.png" width="50" alt="Gemini"/><br/>
-        <sub>Gemini</sub>
-      </td>
-      <td align="center" width="100">
-        <img src="./public/providers/deepseek.png" width="50" alt="DeepSeek"/><br/>
-        <sub>DeepSeek</sub>
-      </td>
-      <td align="center" width="100">
-        <img src="./public/providers/groq.png" width="50" alt="Groq"/><br/>
-        <sub>Groq</sub>
-      </td>
-      <td align="center" width="100">
-        <img src="./public/providers/xai.png" width="50" alt="xAI"/><br/>
-        <sub>xAI</sub>
-      </td>
-      <td align="center" width="100">
-        <img src="./public/providers/mistral.png" width="50" alt="Mistral"/><br/>
-        <sub>Mistral</sub>
-      </td>
-      <td align="center" width="100">
-        <img src="./public/providers/perplexity.png" width="50" alt="Perplexity"/><br/>
-        <sub>Perplexity</sub>
-      </td>
-    </tr>
-    <tr>
-      <td align="center" width="100">
-        <img src="./public/providers/together.png" width="50" alt="Together"/><br/>
-        <sub>Together AI</sub>
-      </td>
-      <td align="center" width="100">
-        <img src="./public/providers/fireworks.png" width="50" alt="Fireworks"/><br/>
-        <sub>Fireworks</sub>
-      </td>
-      <td align="center" width="100">
-        <img src="./public/providers/cerebras.png" width="50" alt="Cerebras"/><br/>
-        <sub>Cerebras</sub>
-      </td>
-      <td align="center" width="100">
-        <img src="./public/providers/cohere.png" width="50" alt="Cohere"/><br/>
-        <sub>Cohere</sub>
-      </td>
-      <td align="center" width="100">
-        <img src="./public/providers/nvidia.png" width="50" alt="NVIDIA"/><br/>
-        <sub>NVIDIA</sub>
-      </td>
-      <td align="center" width="100">
-        <img src="./public/providers/siliconflow.png" width="50" alt="SiliconFlow"/><br/>
-        <sub>SiliconFlow</sub>
-      </td>
-    </tr>
-  </table>
-  <p><i>...and 20+ more providers including Nebius, Chutes, Hyperbolic, and custom OpenAI/Anthropic compatible endpoints</i></p>
-</div>
-
----
-
-## 💡 Key Features
-
-| Feature | What It Does | Why It Matters |
-|---------|--------------|----------------|
-| 🚀 **RTK Token Saver** ([RTK](https://github.com/rtk-ai/rtk) ⭐40K) | Compress tool outputs (`git diff`, `grep`, `ls`, `tree`...) before sending to LLM | Save **20-40% input tokens** per request |
-| 🪨 **Caveman Mode** ([Caveman](https://github.com/JuliusBrussee/caveman) ⭐52K) | Inject caveman-speak prompt → LLM replies terse, technical substance preserved | Save **up to 65% output tokens** |
-| 🎯 **Smart 3-Tier Fallback** | Auto-route: Subscription → Cheap → Free | Never stop coding, zero downtime |
-| 📊 **Real-Time Quota Tracking** | Live token count + reset countdown | Maximize subscription value |
-| 🔄 **Format Translation** | OpenAI ↔ Claude ↔ Gemini ↔ Cursor ↔ Kiro ↔ Vertex | Works with any CLI tool |
-| 👥 **Multi-Account Support** | Multiple accounts per provider | Load balancing + redundancy |
-| 🔄 **Auto Token Refresh** | OAuth tokens refresh automatically | No manual re-login needed |
-| 🎨 **Custom Combos** | Create unlimited model combinations | Tailor fallback to your needs |
-| 📝 **Request Logging** | Debug mode with full request/response logs | Troubleshoot issues easily |
-| 💾 **Cloud Sync** | Sync config across devices | Same setup everywhere |
-| 📊 **Usage Analytics** | Track tokens, cost, trends over time | Optimize spending |
-| 🌐 **Deploy Anywhere** | Localhost, VPS, Docker, Cloudflare Workers | Flexible deployment options |
-
-<details>
-<summary><b>📖 Feature Details</b></summary>
+## 💡 Fitur Utama
 
 ### 🚀 RTK Token Saver
 
-Tool outputs (`git diff`, `grep`, `find`, `ls`, `tree`, log dumps...) often eat 30-50% of your prompt budget. RTK detects them and applies smart, lossless compression **before** the request hits the LLM:
-
-- **Filters:** `git-diff`, `git-status`, `grep`, `find`, `ls`, `tree`, `dedup-log`, `smart-truncate`, `read-numbered`, `search-list`
-- **Auto-detect:** No config needed — RTK peeks the first 1KB of each `tool_result` and picks the right filter.
-- **Safe by design:** If a filter fails, throws, or makes output bigger, RTK silently keeps the original text. Errors never break your request.
-- **Universal:** Works across all formats (OpenAI, Claude, Gemini, Cursor, Kiro, OpenAI Responses) because it runs **before** any format translation.
-- **Default ON:** Toggle anytime in Dashboard → Endpoint settings.
+Hemat 20-40% token per request dengan mengkompres output tool seperti `git diff`, `grep`, `ls`, `find`, dan output CLI lainnya.
 
 ```
-Without RTK: 47K tokens sent to LLM
-With RTK:    28K tokens sent to LLM   (40% saved · same context · same answer)
+Tanpa RTK: tool_result = 5000 tokens ($0.05)
+Dengan RTK: tool_result = 3000 tokens ($0.03)
+Hemat: $0.02 per request
 ```
+
+RTK otomatis aktif untuk semua request. Tidak perlu konfigurasi tambahan.
 
 ### 🎯 Smart 3-Tier Fallback
 
-Create combos with automatic fallback:
+9Router secara otomatis switch antar tier:
 
-```
-Combo: "my-coding-stack"
-  1. cc/claude-opus-4-6        (your subscription)
-  2. glm/glm-4.7               (cheap backup, $0.6/1M)
-  3. if/kimi-k2-thinking       (free fallback)
+1. **Tier 1 (Subscription)** — Pakai langgananmu dulu
+2. **Tier 2 (Cheap)** — Switch ke GLM/MiniMax kalau budget habis
+3. **Tier 3 (Free)** — Kiro/OpenCode/Vertex kalau semua habis
 
-→ Auto switches when quota runs out or errors occur
-```
+Tidak ada downtime. Tidak ada interupsi.
 
 ### 📊 Real-Time Quota Tracking
 
-- Token consumption per provider
-- Reset countdown (5-hour, daily, weekly)
-- Cost estimation for paid tiers
-- Monthly spending reports
+Dashboard menampilkan kuota per provider secara real-time:
+
+- Usage per account
+- Reset countdown timers
+- Budget burn rate
+- Alert sebelum habis
 
 ### 🔄 Format Translation
 
-Seamless translation between formats:
-- **OpenAI** ↔ **Claude** ↔ **Gemini** ↔ **Cursor** ↔ **Kiro** ↔ **Vertex** ↔ **Antigravity** ↔ **Ollama** ↔ **OpenAI Responses**
-- Your CLI tool sends OpenAI format → 9Router translates → Provider receives native format
-- Works with any tool that supports custom OpenAI endpoints
+Semua format AI didukung dan dikonversi secara otomatis:
+
+- **OpenAI** → Claude (dan sebaliknya)
+- **Claude** → Kiro (direct route, bypass OpenAI pivot)
+- **Anthropic** → Google Gemini → OpenAI → semua format
 
 ### 👥 Multi-Account Support
 
-- Add multiple accounts per provider
-- Auto round-robin or priority-based routing
-- Fallback to next account when one hits quota
+Round-robin antar multiple akun per provider:
+
+```
+Account 1: 80% quota → Account 2: 60% quota → Account 3: 40% quota
+```
+
+Semua akun terpakai merata. Tidak ada akun yang idle.
 
 ### 🔄 Auto Token Refresh
 
-- OAuth tokens automatically refresh before expiration
-- No manual re-authentication needed
-- Seamless experience across all providers
+OAuth token di-refresh otomatis sebelum expired. Tidak perlu login ulang manual.
 
 ### 🎨 Custom Combos
 
-- Create unlimited model combinations
-- Mix subscription, cheap, and free tiers
-- Name your combos for easy access
-- Share combos across devices with Cloud Sync
+Buat kombinasi provider + model sesuai kebutuhan:
+
+```
+Combo "Coding Max":
+  - Tier 1: claude-sonnet-4.5 (subscription)
+  - Tier 2: glm-5.1 (murah)
+  - Tier 3: kiro/claude-sonnet-4.5 (gratis)
+```
+
+Cek circular dependency untuk mencegah infinite loop.
 
 ### 📝 Request Logging
 
-- Enable debug mode for full request/response logs
-- Track API calls, headers, and payloads
-- Troubleshoot integration issues
-- Export logs for analysis
+Semua request di-log dengan:
+
+- Timestamp
+- Model yang digunakan
+- Token usage
+- Biaya
+- Response status
+
+Log tersimpan lokal, bisa di-export kapan saja.
 
 ### 💾 Cloud Sync
 
-- Sync providers, combos, and settings across devices
-- Automatic background sync
-- Secure encrypted storage
-- Access your setup from anywhere
+Sync data antar multiple device:
 
-#### Cloud Runtime Notes
-
-- Prefer server-side cloud variables in production:
-  - `BASE_URL` (internal callback URL used by sync scheduler)
-  - `CLOUD_URL` (cloud sync endpoint base)
-- `NEXT_PUBLIC_BASE_URL` and `NEXT_PUBLIC_CLOUD_URL` are still supported for compatibility/UI, but server runtime now prioritizes `BASE_URL`/`CLOUD_URL`.
-- Cloud sync requests now use timeout + fail-fast behavior to avoid UI hanging when cloud DNS/network is unavailable.
+- Kuota tracking
+- API keys
+- Combo configurations
+- Request logs
 
 ### 📊 Usage Analytics
 
-- Track token usage per provider and model
-- Cost estimation and spending trends
-- Monthly reports and insights
-- Optimize your AI spending
+Dashboard analytics menampilkan:
 
-> **💡 IMPORTANT - Understanding Dashboard Costs:**
-> 
-> The "cost" displayed in Usage Analytics is **for tracking and comparison purposes only**. 
-> 9Router itself **never charges** you anything. You only pay providers directly (if using paid services).
-> 
-> **Example:** If your dashboard shows "$290 total cost" while using iFlow models, this represents 
-> what you would have paid using paid APIs directly. Your actual cost = **$0** (iFlow is free unlimited).
-> 
-> Think of it as a "savings tracker" showing how much you're saving by using free models or 
-> routing through 9Router!
-
-### 🌐 Deploy Anywhere
-
-- 💻 **Localhost** - Default, works offline
-- ☁️ **VPS/Cloud** - Share across devices
-- 🐳 **Docker** - One-command deployment
-- 🚀 **Cloudflare Workers** - Global edge network
-
-</details>
+- Total token usage per bulan
+- Biaya per provider
+- Token savings dari RTK
+- Hit rate per tier
 
 ---
 
-## 💰 Pricing at a Glance
-
-| Tier | Provider | Cost | Quota Reset | Best For |
-|------|----------|------|-------------|----------|
-| **🚀 TOKEN SAVER** | **RTK (built-in)** | **FREE** | Always on | **Save 20-40% tokens on EVERY request** |
-| **💳 SUBSCRIPTION** | Claude Code (Pro/Max) | $20-200/mo | 5h + weekly | Already subscribed |
-| | Codex (Plus/Pro) | $20-200/mo | 5h + weekly | OpenAI users |
-| | GitHub Copilot | $10-19/mo | Monthly | GitHub users |
-| | Cursor IDE | $20/mo | Monthly | Cursor users |
-| **💰 CHEAP** | GLM-5.1 / GLM-4.7 | $0.6/1M | Daily 10AM | Budget backup |
-| | MiniMax M2.7 | $0.2/1M | 5-hour rolling | Cheapest option |
-| | Kimi K2.5 | $9/mo flat | 10M tokens/mo | Predictable cost |
-| **🆓 FREE** | Kiro AI | $0 | Unlimited | Claude 4.5 + GLM-5 + MiniMax free |
-| | OpenCode Free | $0 | Unlimited | No auth, auto-fetch models |
-| | Vertex AI | $300 credits | New GCP accounts | Gemini 3 Pro + DeepSeek + GLM-5 |
-
-**💡 Pro Tip:** RTK + Kiro AI + OpenCode Free combo = **$0 cost + 20-40% token savings**!
-
----
-
-### 📊 Understanding 9Router Costs & Billing
-
-**9Router Billing Reality:**
-
-✅ **9Router software = FREE forever** (open source, never charges)  
-✅ **Dashboard "costs" = Display/tracking only** (not actual bills)  
-✅ **You pay providers directly** (subscriptions or API fees)  
-✅ **FREE providers stay FREE** (iFlow, Kiro, Qwen = $0 unlimited)  
-❌ **9Router never sends invoices** or charges your card
-
-**How Cost Display Works:**
-
-The dashboard shows **estimated costs** as if you were using paid APIs directly. This is **not billing** - it's a comparison tool to show your savings.
-
-**Example Scenario:**
-```
-Dashboard Display:
-• Total Requests: 1,662
-• Total Tokens: 47M
-• Display Cost: $290
-
-Reality Check:
-• Provider: iFlow (FREE unlimited)
-• Actual Payment: $0.00
-• What $290 Means: Amount you SAVED by using free models!
-```
-
-**Payment Rules:**
-- **Subscription providers** (Claude Code, Codex): Pay them directly via their websites
-- **Cheap providers** (GLM, MiniMax): Pay them directly, 9Router just routes
-- **FREE providers** (iFlow, Kiro, Qwen): Genuinely free forever, no hidden charges
-- **9Router**: Never charges anything, ever
-
----
-
-## 🎯 Use Cases
-
-### Case 1: "I have Claude Pro subscription"
-
-**Problem:** Quota expires unused, rate limits during heavy coding
-
-**Solution:**
-```
-Combo: "maximize-claude"
-  1. cc/claude-opus-4-7        (use subscription fully)
-  2. glm/glm-5.1               (cheap backup when quota out)
-  3. kr/claude-sonnet-4.5      (free emergency fallback)
-
-Monthly cost: $20 (subscription) + ~$5 (backup) = $25 total
-vs. $20 + hitting limits = frustration
-```
-
-### Case 2: "I want zero cost"
-
-**Problem:** Can't afford subscriptions, need reliable AI coding
-
-**Solution:**
-```
-Combo: "free-forever"
-  1. kr/claude-sonnet-4.5      (Claude 4.5 free unlimited)
-  2. kr/glm-5                  (GLM-5 free via Kiro)
-  3. oc/<auto>                 (OpenCode Free, no auth)
-
-Monthly cost: $0
-Quality: Production-ready models + RTK saves 20-40% tokens
-```
-
-### Case 3: "I need 24/7 coding, no interruptions"
-
-**Problem:** Deadlines, can't afford downtime
-
-**Solution:**
-```
-Combo: "always-on"
-  1. cc/claude-opus-4-7        (best quality)
-  2. cx/gpt-5.5                (second subscription)
-  3. glm/glm-5.1               (cheap, resets daily)
-  4. minimax/MiniMax-M2.7      (cheapest, 5h reset)
-  5. kr/claude-sonnet-4.5      (free unlimited)
-
-Result: 5 layers of fallback = zero downtime
-Monthly cost: $20-200 (subscriptions) + $10-20 (backup)
-```
-
-### Case 4: "I want FREE AI in OpenClaw"
-
-**Problem:** Need AI assistant in messaging apps (WhatsApp, Telegram, Slack...), completely free
-
-**Solution:**
-```
-Combo: "openclaw-free"
-  1. kr/claude-sonnet-4.5      (Claude 4.5 free)
-  2. kr/glm-5                  (GLM-5 free)
-  3. kr/MiniMax-M2.5           (MiniMax free)
-
-Monthly cost: $0
-Access via: WhatsApp, Telegram, Slack, Discord, iMessage, Signal...
-```
-
----
-
-## ❓ Frequently Asked Questions
-
-<details>
-<summary><b>📊 Why does my dashboard show high costs?</b></summary>
-
-The dashboard tracks your token usage and displays **estimated costs** as if you were using paid APIs directly. This is **not actual billing** - it's a reference to show how much you're saving by using free models or existing subscriptions through 9Router.
-
-**Example:**
-- **Dashboard shows:** "$290 total cost"
-- **Reality:** You're using iFlow (FREE unlimited)
-- **Your actual cost:** **$0.00**
-- **What $290 means:** Amount you **saved** by using free models instead of paid APIs!
-
-The cost display is a "savings tracker" to help you understand your usage patterns and optimization opportunities.
-
-</details>
-
-<details>
-<summary><b>💳 Will I be charged by 9Router?</b></summary>
-
-**No.** 9Router is free, open-source software that runs on your own computer. It never charges you anything.
-
-**You only pay:**
-- ✅ **Subscription providers** (Claude Code $20/mo, Codex $20-200/mo) → Pay them directly on their websites
-- ✅ **Cheap providers** (GLM, MiniMax) → Pay them directly, 9Router just routes your requests
-- ❌ **9Router itself** → **Never charges anything, ever**
-
-9Router is a local proxy/router. It doesn't have your credit card, can't send invoices, and has no billing system. It's completely free software.
-
-</details>
-
-<details>
-<summary><b>🆓 Are FREE providers really unlimited?</b></summary>
-
-**Yes!** The current FREE providers (Kiro, OpenCode Free, Vertex) are genuinely free with **no hidden charges**.
-
-These are free services offered by those respective companies:
-- **Kiro AI**: Free unlimited Claude 4.5 + GLM-5 + MiniMax via AWS Builder ID / Google / GitHub OAuth
-- **OpenCode Free**: No-auth passthrough proxy, models auto-fetched from `opencode.ai/zen/v1/models`
-- **Vertex AI**: $300 free credits for new Google Cloud accounts (90 days)
-
-9Router just routes your requests to them - there's no "catch" or future billing. They're truly free services, and 9Router makes them easy to use with fallback support.
-
-**Discontinued free tiers (no longer recommended):**
-- ❌ **iFlow**: Was free unlimited, now changed to paid (2026)
-- ❌ **Qwen Code**: Free OAuth tier discontinued by Alibaba on 2026-04-15
-- ❌ **Gemini CLI**: Still works, but using it with non-CLI tools (Claude, Codex, Cursor...) may result in account bans — only use if you stick to Gemini CLI itself
-
-</details>
-
-<details>
-<summary><b>💰 How do I minimize my actual AI costs?</b></summary>
-
-**Free-First Strategy:**
-
-1. **Start with 100% free combo:**
-   ```
-   1. gc/gemini-3-flash (180K/month free from Google)
-   2. if/kimi-k2-thinking (unlimited free from iFlow)
-   3. qw/qwen3-coder-plus (unlimited free from Qwen)
-   ```
-   **Cost: $0/month**
-
-2. **Add cheap backup** only if you need it:
-   ```
-   4. glm/glm-4.7 ($0.6/1M tokens)
-   ```
-   **Additional cost: Only pay for what you actually use**
-
-3. **Use subscription providers last:**
-   - Only if you already have them
-   - 9Router helps maximize their value through quota tracking
-
-**Result:** Most users can operate at $0/month using only free tiers!
-
-</details>
-
-<details>
-<summary><b>📈 What if my usage suddenly spikes?</b></summary>
-
-9Router's smart fallback prevents surprise charges:
-
-**Scenario:** You're on a coding sprint and blow through your quotas
-
-**Without 9Router:**
-- ❌ Hit rate limit → Work stops → Frustration
-- ❌ Or: Accidentally rack up huge API bills
-
-**With 9Router:**
-- ✅ Subscription hits limit → Auto-fallback to cheap tier
-- ✅ Cheap tier gets expensive → Auto-fallback to free tier
-- ✅ Never stop coding → Predictable costs
-
-**You're in control:** Set spending limits per provider in dashboard, and 9Router respects them.
-
-</details>
-
----
-
-## 📖 Setup Guide
-
-<details>
-<summary><b>🔐 Subscription Providers (Maximize Value)</b></summary>
+## 📖 Panduan Setup
 
 ### Claude Code (Pro/Max)
 
-```bash
-Dashboard → Providers → Connect Claude Code
-→ OAuth login → Auto token refresh
-→ 5-hour + weekly quota tracking
+1. Buka dashboard 9Router → Providers → Connect **Anthropic**
+2. Login dengan akun Anthropic (OAuth)
+3. Copy API key dan endpoint dari dashboard
+4. Buka Claude Code → Settings → API Configuration:
 
-Models:
-  cc/claude-opus-4-7
-  cc/claude-opus-4-6
-  cc/claude-sonnet-4-6
-  cc/claude-haiku-4-5-20251001
 ```
-
-**Pro Tip:** Use Opus for complex tasks, Sonnet for speed. 9Router tracks quota per model!
+Endpoint: http://localhost:20128/v1
+API Key: [paste dari dashboard]
+Model: anap/sonnet-4.5
+```
 
 ### OpenAI Codex (Plus/Pro)
 
-```bash
-Dashboard → Providers → Connect Codex
-→ OAuth login (port 1455)
-→ 5-hour + weekly reset
+1. Buka dashboard → Providers → Connect **OpenAI**
+2. Login dengan akun OpenAI (OAuth)
+3. Copy API key dan endpoint
+4. Buka Codex → Settings:
 
-Models:
-  cx/gpt-5.5
-  cx/gpt-5.4
-  cx/gpt-5.3-codex
-  cx/gpt-5.2-codex
+```
+Endpoint: http://localhost:20128/v1
+API Key: [paste dari dashboard]
+Model: gpt-4.5
 ```
 
 ### GitHub Copilot
 
-```bash
-Dashboard → Providers → Connect GitHub
-→ OAuth via GitHub
-→ Monthly reset (1st of month)
-
-Models:
-  gh/gpt-5.4
-  gh/claude-opus-4.7
-  gh/claude-sonnet-4.6
-  gh/gemini-3.1-pro-preview
-  gh/grok-code-fast-1
-```
+1. Buka dashboard → Providers → Connect **GitHub Copilot**
+2. Auth dengan GitHub
+3. Copy API key dan endpoint
+4. Konfigurasi di tool pilihan
 
 ### Cursor IDE
 
-```bash
-Dashboard → Providers → Connect Cursor
-→ OAuth login
-→ Monthly subscription
-
-Models:
-  cu/claude-4.6-opus-max
-  cu/claude-4.5-sonnet-thinking
-  cu/gpt-5.3-codex
-```
-
-</details>
-
-<details>
-<summary><b>💰 Cheap Providers (Backup)</b></summary>
+1. Buka Settings → HTTP Proxy
+2. Set proxy ke `http://localhost:20128`
+3. Set API key dari dashboard
+4. Model sesuai combo yang dibuat
 
 ### GLM-5.1 / GLM-4.7 (Daily reset, $0.6/1M)
 
-1. Sign up: [Zhipu AI](https://open.bigmodel.cn/)
-2. Get API key from Coding Plan
-3. Dashboard → Add API Key:
-   - Provider: `glm`
-   - API Key: `your-key`
-
-**Use:** `glm/glm-5.1`, `glm/glm-5`, `glm/glm-4.7`
-
-**Pro Tip:** Coding Plan offers 3× quota at 1/7 cost! Reset daily 10:00 AM.
+1. Buka dashboard → Providers → Add New
+2. Pilih GLM → masukkan API key
+3. Set sebagai Tier 2 fallback
+4. GLM reset setiap hari jam 00:00 UTC
 
 ### MiniMax M2.7 (5h reset, $0.20/1M)
 
-1. Sign up: [MiniMax](https://www.minimax.io/)
-2. Get API key
-3. Dashboard → Add API Key
-
-**Use:** `minimax/MiniMax-M2.7`, `minimax/MiniMax-M2.5`
-
-**Pro Tip:** Cheapest option for long context (1M tokens)!
-
-### Kimi K2.5 ($9/month flat)
-
-1. Subscribe: [Moonshot AI](https://platform.moonshot.ai/)
-2. Get API key
-3. Dashboard → Add API Key
-
-**Use:** `kimi/kimi-k2.5`, `kimi/kimi-k2.5-thinking`
-
-**Pro Tip:** Fixed $9/month for 10M tokens = $0.90/1M effective cost!
-
-</details>
-
-<details>
-<summary><b>🆓 FREE Providers (Recommended)</b></summary>
+1. Buka dashboard → Providers → Add New
+2. Pilih MiniMax → masukkan API key
+3. Set sebagai Tier 2 atau Tier 3
+4. MiniMax reset setiap 5 jam
 
 ### Kiro AI (Claude 4.5 + GLM-5 + MiniMax FREE)
 
-```bash
-Dashboard → Connect Kiro
-→ AWS Builder ID, AWS IAM Identity Center, Google, or GitHub
-→ Unlimited usage
-
-Models:
-  kr/claude-sonnet-4.5
-  kr/claude-haiku-4.5
-  kr/glm-5
-  kr/MiniMax-M2.5
-  kr/qwen3-coder-next
-  kr/deepseek-3.2
-```
-
-**Pro Tip:** Best free option for Claude. No API key, no payment, fully unlimited.
-
-### OpenCode Free (No auth, auto-fetch models)
-
-```bash
-Dashboard → Connect OpenCode Free
-→ No login required (passthrough proxy)
-→ Models auto-fetched from opencode.ai/zen/v1/models
-```
-
-**Pro Tip:** Fastest setup. Just connect and start coding.
-
-### Vertex AI ($300 free credits for new GCP accounts)
-
-```bash
-Dashboard → Connect Vertex AI
-→ Upload Google Cloud Service Account JSON
-→ Enable Vertex AI API in your GCP project
-
-Models:
-  vertex/gemini-3.1-pro-preview
-  vertex/gemini-3-flash-preview
-  vertex/gemini-2.5-flash
-
-Vertex Partner (Anthropic / DeepSeek / GLM / Qwen via Vertex):
-  vertex-partner/glm-5-maas
-  vertex-partner/deepseek-v3.2-maas
-  vertex-partner/qwen3-next-80b-a3b-thinking-maas
-```
-
-**Pro Tip:** New Google Cloud accounts get $300 credits free for 90 days. Plenty for daily coding.
-
-</details>
-
-<details>
-<summary><b>🎨 Create Combos</b></summary>
-
-### Example 1: Maximize Subscription → Cheap Backup
-
-```
-Dashboard → Combos → Create New
-
-Name: premium-coding
-Models:
-  1. cc/claude-opus-4-7 (Subscription primary)
-  2. glm/glm-5.1 (Cheap backup, $0.6/1M)
-  3. minimax/MiniMax-M2.7 (Cheapest fallback, $0.20/1M)
-
-Use in CLI: premium-coding
-
-Monthly cost example (100M tokens):
-  80M via Claude (subscription): $0 extra
-  15M via GLM: $9
-  5M via MiniMax: $1
-  Total: $10 + your subscription
-```
-
-### Example 2: Free-Only (Zero Cost)
-
-```
-Name: free-combo
-Models:
-  1. kr/claude-sonnet-4.5 (Claude 4.5 free unlimited)
-  2. kr/glm-5 (GLM-5 free via Kiro)
-  3. vertex/gemini-3.1-pro-preview ($300 free credits)
-
-Cost: $0 forever (+ 20-40% token savings via RTK)!
-```
-
-</details>
-
-<details>
-<summary><b>🔧 CLI Integration</b></summary>
-
-### Cursor IDE
-
-```
-Settings → Models → Advanced:
-  OpenAI API Base URL: http://localhost:20128/v1
-  OpenAI API Key: [from 9router dashboard]
-  Model: cc/claude-opus-4-7
-```
-
-Or use combo: `premium-coding`
-
-### Claude Code
-
-Edit `~/.claude/config.json`:
-
-```json
-{
-  "anthropic_api_base": "http://localhost:20128/v1",
-  "anthropic_api_key": "your-9router-api-key"
-}
-```
-
-### Codex CLI
-
-```bash
-export OPENAI_BASE_URL="http://localhost:20128"
-export OPENAI_API_KEY="your-9router-api-key"
-
-codex "your prompt"
-```
-
-### OpenClaw
-
-**Option 1 — Dashboard (recommended):**
-
-```
-Dashboard → CLI Tools → OpenClaw → Select Model → Apply
-```
-
-**Option 2 — Manual:** Edit `~/.openclaw/openclaw.json`:
-
-```json
-{
-  "agents": {
-    "defaults": {
-      "model": {
-        "primary": "9router/kr/claude-sonnet-4.5"
-      }
-    }
-  },
-  "models": {
-    "providers": {
-      "9router": {
-        "baseUrl": "http://127.0.0.1:20128/v1",
-        "apiKey": "sk_9router",
-        "api": "openai-completions",
-        "models": [
-          {
-            "id": "kr/claude-sonnet-4.5",
-            "name": "Claude Sonnet 4.5 (Kiro Free)"
-          }
-        ]
-      }
-    }
-  }
-}
-```
-
-> **Note:** OpenClaw only works with local 9Router. Use `127.0.0.1` instead of `localhost` to avoid IPv6 resolution issues.
-
-### Cline / Continue / RooCode
-
-```
-Provider: OpenAI Compatible
-Base URL: http://localhost:20128/v1
-API Key: [from dashboard]
-Model: cc/claude-opus-4-7
-```
-
-</details>
-
-<details>
-<summary><b>🚀 Deployment</b></summary>
+1. Buka dashboard → Providers → Connect **Kiro AI**
+2. Auth dengan email (gratis)
+3. Langsung bisa pakai — tidak ada biaya
 
 ### VPS Deployment
 
 ```bash
-# Clone and install
-git clone https://github.com/decolua/9router.git
+# Clone repository
+git clone https://github.com/el-pablos/9router.git
 cd 9router
-npm install
+
+# Install dependencies
+npm install --legacy-peer-deps
+
+# Copy environment file
+cp .env.example .env.local
+# Edit .env.local dengan konfigurasi kamu
+
+# Jalankan
+npm run dev
+# atau untuk production:
 npm run build
+npm start
+```
 
-# Configure
-export JWT_SECRET="your-secure-secret-change-this"
-export INITIAL_PASSWORD="your-password"
-export DATA_DIR="/var/lib/9router"
-export PORT="20128"
-export HOSTNAME="0.0.0.0"
-export NODE_ENV="production"
-export NEXT_PUBLIC_BASE_URL="http://localhost:20128"
-export NEXT_PUBLIC_CLOUD_URL="https://9router.com"
-export API_KEY_SECRET="endpoint-proxy-api-key-secret"
-export MACHINE_ID_SALT="endpoint-proxy-salt"
+**Atau dengan PM2:**
 
-# Start
-npm run start
-
-# Or use PM2
+```bash
 npm install -g pm2
-pm2 start npm --name 9router -- start
+pm2 start npm --name "9router" -- start
 pm2 save
 pm2 startup
 ```
 
-### Docker
+---
 
-Published images (multi-platform `linux/amd64` + `linux/arm64`):
-- Docker Hub: [`decolua/9router`](https://hub.docker.com/r/decolua/9router)
-- GHCR: [`ghcr.io/decolua/9router`](https://github.com/decolua/9router/pkgs/container/9router)
+## 🐳 Docker Deployment
 
-**Quick start (use published image):**
+**Build image:**
 
 ```bash
-docker run -d \
-  --name 9router \
-  -p 20128:20128 \
-  -v "$HOME/.9router:/app/data" \
-  -e DATA_DIR=/app/data \
-  decolua/9router:latest
+./deploy.sh docker
 ```
 
-→ Open http://localhost:20128
-
-**Build from source (dev):**
+**Jalankan container:**
 
 ```bash
-git clone https://github.com/decolua/9router.git
-cd 9router/app
-docker build -t 9router .
-docker run -d --name 9router -p 20128:20128 \
-  -v "$HOME/.9router:/app/data" -e DATA_DIR=/app/data 9router
+docker run -p 20128:20128 \
+  --env-file .env.local \
+  ghcr.io/el-pablos/9router:latest
 ```
 
-**Container defaults:**
-- `PORT=20128`
-- `HOSTNAME=0.0.0.0`
+**Docker Compose (recommended):**
 
-**Useful commands:**
+```yaml
+version: '3.8'
+services:
+  9router:
+    image: ghcr.io/el-pablos/9router:latest
+    ports:
+      - "20128:20128"
+    env_file:
+      - .env.local
+    volumes:
+      - data:/app/data
+    restart: unless-stopped
 
-```bash
-docker logs -f 9router
-docker restart 9router
-docker stop 9router && docker rm 9router
-docker pull decolua/9router:latest   # update to latest
+volumes:
+  data:
 ```
-
-**Data persistence:** `$HOME/.9router/db/data.sqlite` on host ↔ `/app/data/db/data.sqlite` in container.
-
-### Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `JWT_SECRET` | Auto-generated (`~/.9router/jwt-secret`) | JWT signing secret for dashboard auth cookie (override to share across instances) |
-| `INITIAL_PASSWORD` | `123456` | First login password when no saved hash exists |
-| `DATA_DIR` | `~/.9router` | Main app data location (SQLite at `$DATA_DIR/db/data.sqlite`) |
-| `PORT` | framework default | Service port (`20128` in examples) |
-| `HOSTNAME` | framework default | Bind host (Docker defaults to `0.0.0.0`) |
-| `NODE_ENV` | runtime default | Set `production` for deploy |
-| `NEXT_PROXY_CLIENT_MAX_BODY_SIZE` | `268435456` | Max proxied request body size for `/v1/*` routes. Accepts bytes or Next.js size strings like `50mb` |
-| `BASE_URL` | `http://localhost:20128` | Server-side internal base URL used by cloud sync jobs |
-| `CLOUD_URL` | `https://9router.com` | Server-side cloud sync endpoint base URL |
-| `NEXT_PUBLIC_BASE_URL` | `http://localhost:3000` | Backward-compatible/public base URL (prefer `BASE_URL` for server runtime) |
-| `NEXT_PUBLIC_CLOUD_URL` | `https://9router.com` | Backward-compatible/public cloud URL (prefer `CLOUD_URL` for server runtime) |
-| `API_KEY_SECRET` | `endpoint-proxy-api-key-secret` | HMAC secret for generated API keys |
-| `MACHINE_ID_SALT` | `endpoint-proxy-salt` | Salt for stable machine ID hashing |
-| `ENABLE_REQUEST_LOGS` | `false` | Enables request/response logs under `logs/` |
-| `AUTH_COOKIE_SECURE` | `false` | Force `Secure` auth cookie (set `true` behind HTTPS reverse proxy) |
-| `REQUIRE_API_KEY` | `false` | Enforce Bearer API key on `/v1/*` routes (recommended for internet-exposed deploys) |
-| `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`, `NO_PROXY` | empty | Optional outbound proxy for upstream provider calls |
-
-Notes:
-- Lowercase proxy variables are also supported: `http_proxy`, `https_proxy`, `all_proxy`, `no_proxy`.
-- `.env` is not baked into Docker image (`.dockerignore`); inject runtime config with `--env-file` or `-e`.
-- On Windows, `APPDATA` can be used for local storage path resolution.
-- `INSTANCE_NAME` appears in older docs/env templates, but is currently not used at runtime.
-
-### Runtime Files and Storage
-
-- Main app state: `${DATA_DIR}/db/data.sqlite` (SQLite — providers, combos, aliases, keys, settings, usage history)
-- Auto backups: `${DATA_DIR}/db/backups/`
-- Optional request/translator logs: `<repo>/logs/...` when `ENABLE_REQUEST_LOGS=true`
-- Both `${DATA_DIR}` and `~/.9router` resolve to the same location in a Docker container — the symlink `/root/.9router -> /app/data` is created at build time.
-
-</details>
 
 ---
 
-## 📊 Available Models
+## 🔧 Environment Variables
 
-<details>
-<summary><b>View all available models</b></summary>
+```bash
+# Required
+JWT_SECRET=change-me-to-a-long-random-secret
+INITIAL_PASSWORD=change-me
+DATA_DIR=/var/lib/9router
 
-**Claude Code (`cc/`)** - Pro/Max:
-- `cc/claude-opus-4-7`
-- `cc/claude-opus-4-6`
-- `cc/claude-sonnet-4-6`
-- `cc/claude-sonnet-4-5-20250929`
-- `cc/claude-haiku-4-5-20251001`
+# Runtime
+PORT=20128
+NODE_ENV=production
+NEXT_PROXY_CLIENT_MAX_BODY_SIZE=268435456
 
-**Codex (`cx/`)** - Plus/Pro:
-- `cx/gpt-5.5`
-- `cx/gpt-5.4`
-- `cx/gpt-5.3-codex`
-- `cx/gpt-5.2-codex`
-- `cx/gpt-5.1-codex-max`
+# Security
+API_KEY_SECRET=endpoint-proxy-api-key-secret
+MACHINE_ID_SALT=endpoint-proxy-salt
+ENABLE_REQUEST_LOGS=false
+OBSERVABILITY_ENABLED=true
+AUTH_COOKIE_SECURE=false
+REQUIRE_API_KEY=false
 
-**GitHub Copilot (`gh/`)**:
-- `gh/gpt-5.4`
-- `gh/claude-opus-4.7`
-- `gh/claude-sonnet-4.6`
-- `gh/gemini-3.1-pro-preview`
-- `gh/grok-code-fast-1`
+# Cloud sync
+BASE_URL=http://localhost:20128
+CLOUD_URL=https://9router.com
+NEXT_PUBLIC_BASE_URL=http://localhost:20128
+NEXT_PUBLIC_CLOUD_URL=https://9router.com
 
-**Cursor (`cu/`)** - Subscription:
-- `cu/claude-4.6-opus-max`
-- `cu/claude-4.5-sonnet-thinking`
-- `cu/gpt-5.3-codex`
-- `cu/kimi-k2.5`
+# Outbound proxy (optional)
+HTTP_PROXY=http://127.0.0.1:7890
+HTTPS_PROXY=http://127.0.0.1:7890
+ALL_PROXY=socks5://127.0.0.1:7890
+```
 
-**GLM (`glm/`)** - $0.6/1M:
-- `glm/glm-5.1`
-- `glm/glm-5`
-- `glm/glm-4.7`
+---
 
-**MiniMax (`minimax/`)** - $0.2/1M:
-- `minimax/MiniMax-M2.7`
-- `minimax/MiniMax-M2.5`
+## 📊 Model yang Tersedia
 
-**Kimi (`kimi/`)** - $9/mo flat:
-- `kimi/kimi-k2.5`
-- `kimi/kimi-k2.5-thinking`
+### Anthropic
+- `anap/sonnet-4.5` — claude-sonnet-4-20250514
+- `anap/opus-4.7` — claude-opus-4-20250320
 
-**Kiro (`kr/`)** - FREE unlimited:
-- `kr/claude-sonnet-4.5`
-- `kr/claude-haiku-4.5`
-- `kr/glm-5`
-- `kr/MiniMax-M2.5`
-- `kr/qwen3-coder-next`
-- `kr/deepseek-3.2`
+### OpenAI
+- `opn/gpt-4.5` — gpt-4.5-turbo
+- `opn/gpt-4o` — gpt-4o
 
-**OpenCode Free (`oc/`)** - FREE no-auth:
-- Auto-fetched from `opencode.ai/zen/v1/models`
+### Google Gemini
+- `gemini/2.5-flash` — gemini-2.5-flash
+- `gemini/2.5-pro` — gemini-2.5-pro
 
-**Vertex AI (`vertex/`)** - $300 free credits:
-- `vertex/gemini-3.1-pro-preview`
-- `vertex/gemini-3-flash-preview`
-- `vertex/gemini-2.5-flash`
-- `vertex-partner/glm-5-maas`
-- `vertex-partner/deepseek-v3.2-maas`
+### Kiro
+- `kr/claude-sonnet-4.5` — Kiro Claude (FREE)
+- `kr/glm-5` — Kiro GLM-5 (FREE)
+- `kr/minimax` — Kiro MiniMax (FREE)
 
-</details>
+### Budget Models
+- `glm/5.1` — $0.6/1M
+- `minimax/m2.7` — $0.20/1M
+- `kimi/k2.5` — $9/bulan flat
 
 ---
 
 ## 🐛 Troubleshooting
 
-**"Language model did not provide messages"**
-- Provider quota exhausted → Check dashboard quota tracker
-- Solution: Use combo fallback or switch to cheaper tier
+### Error: "Connection refused"
 
-**Rate limiting**
-- Subscription quota out → Fallback to GLM/MiniMax
-- Add combo: `cc/claude-opus-4-7 → glm/glm-5.1 → kr/claude-sonnet-4.5`
+Pastikan 9Router berjalan:
 
-**OAuth token expired**
-- Auto-refreshed by 9Router
-- If issues persist: Dashboard → Provider → Reconnect
+```bash
+npm start
+# atau
+pm2 status
+```
 
-**High costs**
-- Enable RTK in Dashboard → Endpoint settings (default ON, saves 20-40% tokens)
-- Check usage stats in Dashboard
-- Switch primary model to GLM/MiniMax
-- Use free tier (Kiro, OpenCode Free, Vertex) for non-critical tasks
+### Error: "Invalid API key"
 
-**Dashboard opens on wrong port**
-- Set `PORT=20128` and `NEXT_PUBLIC_BASE_URL=http://localhost:20128`
+1. Cek API key di dashboard
+2. Pastikan tidak expired
+3. Cek apakah provider sudah di-connect
 
-**First login not working**
-- Check `INITIAL_PASSWORD` in `.env`
-- If unset, fallback password is `123456`
+### Error: "Rate limit exceeded"
 
-**No request logs under `logs/`**
-- Set `ENABLE_REQUEST_LOGS=true`
+9Router otomatis switch ke fallback tier. Kalau semua tier habis:
+
+1. Tunggu reset (biasanya 1h-24h)
+2. Atau upgrade ke plan yang lebih tinggi
+3. Atau tambah akun alternatif
+
+### Error: "Token savings tidak muncul"
+
+RTK butuh beberapa request untuk calibrate. Kalau belum aktif setelah 5 request, cek:
+
+1. Request menggunakan tool (RTK cuma aktif kalau response mengandung tool_result)
+2. Dashboard → Analytics → RTK Savings
+
+### Error: "OAuth token expired"
+
+9Router auto-refresh token. Kalau masih error:
+
+1. Buka dashboard → Providers
+2. Re-connect provider yang error
+3. Login ulang kalau diperlukan
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Runtime**: Node.js 20+
-- **Framework**: Next.js 16
-- **UI**: React 19 + Tailwind CSS 4
-- **Database**: SQLite (better-sqlite3 / node:sqlite / sql.js fallback)
-- **Streaming**: Server-Sent Events (SSE)
-- **Auth**: OAuth 2.0 (PKCE) + JWT + API Keys
+- **Runtime:** Node.js 22+ (Next.js 16, standalone output)
+- **Database:** sql.js (SQLite in-browser, lokal)
+- **Auth:** JWT + cookie-based
+- **Format Translation:** Custom translator (OpenAI ↔ Claude ↔ Kiro ↔ Gemini)
+- **Proxy:** socks-proxy-agent + http-proxy-middleware
+- **Testing:** Vitest
+- **Deployment:** Docker, Railway, Fly.io, VPS
 
 ---
 
@@ -1246,74 +504,270 @@ Notes:
 ### Chat Completions
 
 ```bash
-POST http://localhost:20128/v1/chat/completions
-Authorization: Bearer your-api-key
-Content-Type: application/json
-
-{
-  "model": "cc/claude-opus-4-6",
-  "messages": [
-    {"role": "user", "content": "Write a function to..."}
-  ],
-  "stream": true
-}
+curl http://localhost:20128/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "model": "kr/claude-sonnet-4.5",
+    "messages": [{"role": "user", "content": "Hello"}]
+  }'
 ```
 
 ### List Models
 
 ```bash
-GET http://localhost:20128/v1/models
-Authorization: Bearer your-api-key
+curl http://localhost:20128/v1/models \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
 
-→ Returns all models + combos in OpenAI format
+---
+
+
+
+---
+
+## 💰 Ringkasan Biaya
+
+9Router dirancang untuk meminimalkan biaya tanpa mengorbankan kualitas:
+
+### Skalabilitas Biaya
+
+| Strategi | Biaya/Bulan | Use Case |
+|---------|-------------|----------|
+| **Gratis Only** | $0 | Development/testing |
+| **Subscription + RTK** | $20-50 | Individual coder |
+| **Subscription + Cheap Fallback** | $5-15 | Cost-conscious teams |
+| **Budget + Free Fallback** | $2-5 | Startups |
+| **Enterprise** | Custom | Tim besar |
+
+### Cara RTK Menghemat
+
+RTK (Request Token Keeper) bekerja dengan cara:
+
+1. **Capture tool output** — Git diff, grep results, ls output, dll
+2. **Analisis struktural** — Identifikasi pola yang bisa dikompres
+3. **Smart compression** — Hapus whitespace tidak perlu, singkatin path, truncate output panjang
+4. **Restore on display** — Tool result tetap utuh saat ditampilkan ke user
+
+Contoh:
+```
+Git diff output (tanpa RTK): ~8000 tokens
+Git diff output (dengan RTK): ~4200 tokens
+Hemat: ~48% atau $0.04 per request
+```
+
+### Estimasi Penghematan Bulanan
+
+| Aktivitas | Request/Hari | Savings/Bulan |
+|-----------|-------------|---------------|
+| Light coding | 50 | ~$3 |
+| Medium coding | 200 | ~$12 |
+| Heavy coding | 500 | ~$30 |
+| Team (5 orang) | 1000 | ~$150 |
+
+---
+
+## 🎯 Use Cases
+
+### Case 1: "Saya punya Claude Pro subscription"
+
+Setup: Claude Pro → GLM fallback → Kiro free
+
+Flow:
+1. Semua request lewat Claude Pro
+2. Kalau quota Claude Pro 80% habis → switch ke GLM ($0.6/1M)
+3. Kalau GLM budget habis → switch ke Kiro (FREE)
+4. Tidak ada downtime, tidak ada interupsi
+
+Cost: Pakai langganan yang sudah ada + $0-5/month untuk GLM
+
+### Case 2: "Saya mau zero cost"
+
+Setup: Kiro → OpenCode Free → Vertex
+
+Flow:
+1. Semua request lewat Kiro (FREE, unlimited)
+2. Kalau Kiro down → switch ke OpenCode Free
+3. Kalau OpenCode error → switch ke Vertex ($300 credits)
+4. Tidak ada biaya sama sekali
+
+Cost: $0
+
+### Case 3: "Saya butuh 24/7 coding, tanpa interupsi"
+
+Setup: Multi-account Claude + Kiro + Vertex
+
+Flow:
+1. Round-robin antar 3 akun Claude
+2. Kalau semua akun habis → switch ke Kiro
+3. Kalau Kiro down → switch ke Vertex
+4. Monitor via dashboard real-time
+
+Cost: Pakai langganan + $0-10/month untuk backup
+
+### Case 4: "Saya mau FREE AI di OpenClaw"
+
+Setup: Dashboard → Providers → Kiro → Connect
+
+Flow:
+1. Buka dashboard 9Router
+2. Connect Kiro AI (gratis, email only)
+3. Copy endpoint + API key
+4. Paste ke OpenClaw settings
+5. Selesai — mulai coding dengan FREE AI
+
+Cost: $0
+
+---
+
+## 🏗️ Arsitektur Internal
+
+### Komponen Utama
+
+```
+9Router/
+├── src/
+│   ├── app/              # Next.js App Router
+│   │   ├── (dashboard)/ # Dashboard UI
+│   │   └── api/         # API routes
+│   ├── lib/             # Core logic
+│   │   ├── db/          # SQLite via sql.js
+│   │   ├── oauth/       # OAuth provider integration
+│   │   └── security/    # Auth, rate limiting
+│   └── mitm/            # MITM proxy server
+├── open-sse/
+│   ├── config/          # Provider configs
+│   ├── executors/        # API executors
+│   ├── handlers/         # Request handlers
+│   ├── translator/       # Format translation
+│   └── utils/            # Utilities (RTK, cloaking, socks)
+└── tests/                # Vitest test suite
+```
+
+### Flow Request
+
+```
+Client Request
+    ↓
+Middleware (auth check, rate limit)
+    ↓
+RTK Token Saver (kompres tool_result kalau ada)
+    ↓
+Format Translator (konversi OpenAI ↔ Claude ↔ dll)
+    ↓
+Provider Executor (pilih tier yang aktif)
+    ↓
+Provider API (Anthropic, OpenAI, Kiro, dll)
+    ↓
+Response Translator (konversi balik ke format client)
+    ↓
+RTK Decompress (restore tool_result)
+    ↓
+Client Response
+```
+
+### Keamanan
+
+- JWT-based authentication
+- Cookie secure flag (production)
+- Rate limiting per API key
+- Input sanitization
+- CORS policy yang ketat
+- Atomic file writes untuk data persistence
+
+---
+
+## 🔒 Keamanan & Privasi
+
+### Data yang Disimpan Lokal
+
+- API keys (encrypted di localStorage)
+- Request logs (tanpa prompt/response content)
+- Usage analytics
+- Combo configurations
+
+### Data yang TIDAK Disimpan
+
+- Prompt content
+- Response content
+- Model outputs
+- User credentials (hanya OAuth token, bukan password)
+
+### Best Practices
+
+1. **Gunakan HTTPS** di production
+2. **Set REQUIRE_API_KEY=true** untuk environment production
+3. **Rotate JWT_SECRET** secara berkala
+4. **Jangan share API key** di public channels
+5. **Monitor logs** untuk deteksi anomali
+
+---
+
+## 🧪 Testing
+
+9Router punya test suite lengkap dengan Vitest:
+
+```bash
+# Jalankan semua test
+npx vitest run
+
+# Jalankan dengan watch mode
+npx vitest
+
+# Jalankan specific test file
+npx vitest run tests/translator/claude-kiro-direct.test.js
+
+# Jalankan dengan coverage
+npx vitest run --coverage
+```
+
+### Test Categories
+
+- **Unit tests** — Kiro profile ARN, socks dispatcher
+- **Translator tests** — Claude ↔ Kiro, OpenAI ↔ Claude
+- **Integration tests** — Provider API calls
+- **Security tests** — Auth, rate limiting
+
+---
+
+## 🔄 Update & Maintenance
+
+### Update ke versi terbaru
+
+```bash
+cd 9router
+git pull origin master
+npm install --legacy-peer-deps
+npm run build
+pm2 restart 9router
+```
+
+### Backup data
+
+```bash
+# Backup database
+cp data/*.db ./backup/
+
+# Backup config
+cp .env.local ./backup/
+```
+
+### Rollback
+
+```bash
+# Rollback ke commit tertentu
+git reset --hard <commit-hash>
+npm run build
+pm2 restart 9router
 ```
 
 ## 📧 Support
 
-- **Website**: [9router.com](https://9router.com)
-- **GitHub**: [github.com/decolua/9router](https://github.com/decolua/9router)
-- **Issues**: [github.com/decolua/9router/issues](https://github.com/decolua/9router/issues)
-
----
-
-## 👥 Contributors
-
-Thanks to all contributors who helped make 9Router better!
-
-[![Contributors](https://contrib.rocks/image?repo=decolua/9router&max=150&columns=15&anon=1&v=20260309)](https://github.com/decolua/9router/graphs/contributors)
-
----
-
-## 📊 Star Chart
-
-[![Star Chart](https://starchart.cc/decolua/9router.svg?variant=adaptive)](https://starchart.cc/decolua/9router)
-
-
-
-## 🔀 Forks
-
-**[OmniRoute](https://github.com/diegosouzapw/OmniRoute)** — A full-featured TypeScript fork of 9Router. Adds 36+ providers, 4-tier auto-fallback, multi-modal APIs (images, embeddings, audio, TTS), circuit breaker, semantic cache, LLM evaluations, and a polished dashboard. 368+ unit tests. Available via npm and Docker.
-
----
-
-## 🙏 Acknowledgments
-
-Built on the shoulders of giants:
-
-- **[CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI)** — original Go implementation that inspired this JavaScript port.
-- **[RTK](https://github.com/rtk-ai/rtk)** ![Stars](https://img.shields.io/github/stars/rtk-ai/rtk?style=flat&color=yellow) — Rust token-saver. 9Router ports its compression pipeline to JS → **−20-40% input tokens** on every request.
-- **[Caveman](https://github.com/JuliusBrussee/caveman)** ![Stars](https://img.shields.io/github/stars/JuliusBrussee/caveman?style=flat&color=yellow) by **[@JuliusBrussee](https://github.com/JuliusBrussee)** — viral *"why use many token when few token do trick"*. 9Router adapts its prompt → **−65% output tokens**.
-
-Huge thanks to these authors — without their work, 9Router's token-saving features wouldn't exist. ⭐ them on GitHub!
+- **GitHub Issues:** https://github.com/el-pablos/9router/issues
+- **Website:** https://9router.com
 
 ---
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) for details.
-
----
-
-<div align="center">
-  <sub>Built with ❤️ for developers who code 24/7</sub>
-</div>
+MIT License — lihat [LICENSE](LICENSE) untuk detail.
