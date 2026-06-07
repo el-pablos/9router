@@ -95,6 +95,8 @@ export class KiroExecutor extends BaseExecutor {
 
     const transformStream = new TransformStream({
       async transform(chunk, controller) {
+             // Track output so we can emit a keepalive if this frame yields no chunk.
+        const enqueueCountBefore = chunkIndex;
         // Append to buffer
         const newBuffer = new Uint8Array(buffer.length + chunk.length);
         newBuffer.set(buffer);
@@ -118,7 +120,7 @@ export class KiroExecutor extends BaseExecutor {
           if (!event) continue;
 
           const eventType = event.headers[":event-type"] || "";
-          
+
           // Track total content length for token estimation
           if (!state.totalContentLength) state.totalContentLength = 0;
           if (!state.contextUsagePercentage) state.contextUsagePercentage = 0;
@@ -127,7 +129,7 @@ export class KiroExecutor extends BaseExecutor {
           if (eventType === "assistantResponseEvent" && event.payload?.content) {
             const content = event.payload.content;
             state.totalContentLength += content.length;
-            
+
             const chunk = {
               id: responseId,
               object: "chat.completion.chunk",
@@ -314,7 +316,7 @@ export class KiroExecutor extends BaseExecutor {
             if (metrics && typeof metrics === 'object') {
               const inputTokens = metrics.inputTokens || 0;
               const outputTokens = metrics.outputTokens || 0;
-              
+
               if (inputTokens > 0 || outputTokens > 0) {
                 state.usage = {
                   prompt_tokens: inputTokens,
@@ -328,27 +330,27 @@ export class KiroExecutor extends BaseExecutor {
           // Emit final chunk only after receiving BOTH meteringEvent AND contextUsageEvent
           if (state.hasMeteringEvent && state.hasContextUsage && !state.finishEmitted) {
             state.finishEmitted = true;
-            
+
             // Estimate tokens if not available from events
             if (!state.usage) {
               // Estimate output tokens from content length
-              const estimatedOutputTokens = state.totalContentLength > 0 
+              const estimatedOutputTokens = state.totalContentLength > 0
                 ? Math.max(1, Math.floor(state.totalContentLength / 4))
                 : 0;
-              
+
               // Estimate input tokens from contextUsagePercentage
               // Kiro models typically have 200k context window
               const estimatedInputTokens = state.contextUsagePercentage > 0
                 ? Math.floor(state.contextUsagePercentage * 200000 / 100)
                 : 0;
-              
+
               state.usage = {
                 prompt_tokens: estimatedInputTokens,
                 completion_tokens: estimatedOutputTokens,
                 total_tokens: estimatedInputTokens + estimatedOutputTokens
               };
             }
-            
+
             const finishChunk = {
               id: responseId,
               object: "chat.completion.chunk",
@@ -360,12 +362,12 @@ export class KiroExecutor extends BaseExecutor {
                 finish_reason: state.hasToolCalls ? "tool_calls" : "stop"
               }]
             };
-            
+
             // Include usage in final chunk if available
             if (state.usage) {
               finishChunk.usage = state.usage;
             }
-            
+
             controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(finishChunk)}\n\n`));
           }
         }
@@ -373,6 +375,12 @@ export class KiroExecutor extends BaseExecutor {
         if (iterations >= maxIterations) {
           console.warn("[Kiro] Max iterations reached in event parsing");
         }
+
+        // No client chunk produced this frame — emit an SSE comment keepalive
+                // so the stall watchdog sees upstream activity (ignored by parser/client).
+                if (chunkIndex === enqueueCountBefore && !state.finishEmitted) {
+                  controller.enqueue(new TextEncoder().encode(": ka\n\n"));
+                }
       },
 
       flush(controller) {
