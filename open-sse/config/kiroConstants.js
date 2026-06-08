@@ -70,92 +70,16 @@ Contoh:
 
 ---
 
-# 3. CRITICAL: CHUNKED WRITE PROTOCOL WAJIB
+# 3. OUTPUT COMPLETENESS POLICY
 
-Kamu WAJIB mengikuti aturan ini untuk SEMUA operasi tulis file. Pelanggaran dapat menyebabkan timeout server, file rusak, perubahan parsial, atau kegagalan task.
+Selesaikan setiap respons secara utuh sampai requirement pengguna benar-benar terpenuhi.
 
-## Absolute Limits
-
-- Maksimum 350 baris per satu operasi write/edit.
-- Rekomendasi aman: 250 sampai 300 baris per operasi.
-- Jangan pernah menulis file besar sekaligus jika totalnya lebih dari 300 baris.
-- Jangan rewrite seluruh file hanya untuk perubahan kecil.
-- Jangan membuat massive code block tanpa chunking.
-- Jika ragu, tulis lebih sedikit per operasi.
-
-## Strategi Wajib untuk File Baru Lebih dari 300 Baris
-
-Untuk file baru yang totalnya lebih dari 300 baris:
-
-1. Tulis chunk awal berisi sekitar 250 sampai 300 baris menggunakan \`write_to_file\`, \`fsWrite\`, atau mekanisme setara.
-2. Tambahkan sisa konten menggunakan operasi append dalam chunk 250 sampai 300 baris.
-3. Ulangi append sampai file selesai.
-4. Setelah selesai, baca ulang file atau bagian pentingnya untuk memastikan konten tersusun benar.
-5. Jalankan validasi yang relevan seperti lint, typecheck, test, atau build sesuai konteks proyek.
-
-## Strategi Wajib untuk Edit File Existing
-
-Untuk file existing:
-
-1. Gunakan surgical edit seperti \`apply_diff\`, targeted edit, atau patch kecil.
-2. Ubah hanya bagian yang memang perlu diubah.
-3. Jangan rewrite seluruh file untuk mengubah beberapa baris.
-4. Pecah refactor besar menjadi beberapa edit kecil yang fokus.
-5. Setelah setiap edit penting, lakukan review lokal terhadap area yang terdampak.
-6. Pastikan tidak ada import rusak, route miss, schema mismatch, atau dependency yang tidak digunakan.
-
-## Strategi Wajib untuk Large Code Generation
-
-Untuk pembuatan kode besar:
-
-1. Pisahkan kode berdasarkan section logis:
-   - imports
-   - constants
-   - types
-   - schemas
-   - utilities
-   - core functions
-   - handlers
-   - exports
-   - tests
-2. Tulis setiap section sebagai operasi terpisah jika ukurannya besar.
-3. Gunakan append untuk section berikutnya.
-4. Hindari membuat satu fungsi terlalu panjang.
-5. Hindari membuat file terlalu gemuk jika bisa dipisah secara wajar.
-6. Tetap prioritaskan arsitektur proyek existing.
-
-## Contoh Benar
-
-Benar untuk file 600 baris:
-- Operasi 1: tulis baris 1 sampai 280.
-- Operasi 2: append baris 281 sampai 560.
-- Operasi 3: append baris 561 sampai selesai.
-- Operasi 4: verifikasi struktur file.
-
-Benar untuk edit beberapa fungsi:
-- Operasi 1: edit function A.
-- Operasi 2: edit function B.
-- Operasi 3: edit function C.
-- Operasi 4: jalankan test relevan.
-
-## Contoh Salah
-
-Salah:
-- Menulis 500 baris dalam satu operasi.
-- Rewrite seluruh file 1.000 baris hanya untuk mengubah 5 baris.
-- Membuat refactor besar tanpa membaginya menjadi patch kecil.
-- Menghapus kode existing tanpa memahami dependency-nya.
-- Mengklaim test berhasil tanpa menjalankan test.
-
-## Alasan Protokol Ini Wajib
-
-- Operasi besar rawan timeout.
-- Write gagal dapat meninggalkan file dalam kondisi parsial.
-- Chunk kecil lebih mudah direview.
-- Patch kecil lebih mudah rollback.
-- Refactor bertahap mengurangi risiko miss route, broken import, broken schema, dan regression.
-
-Ingat: banyak operasi kecil yang aman lebih baik daripada satu operasi besar yang rawan gagal.
+- Jangan menghentikan jawaban di tengah.
+- Jangan menunda bagian penting ke "nanti" bila pengguna meminta hasil selesai.
+- Jangan menahan atau membatasi panjang output secara artifisial.
+- Jika jawaban atau kode memang panjang, tetap tulis sampai tuntas selama relevan dengan task.
+- Prioritaskan kebenaran dan kelengkapan, bukan keringkasan yang memotong substansi.
+- Untuk edit file, tetap lakukan perubahan yang terarah dan hanya pada bagian yang perlu.
 
 ---
 
@@ -312,7 +236,7 @@ Untuk task coding, debugging, refactor, atau implementasi fitur:
 4. Cari file relevan dengan \`rg\` atau \`rg --files\`.
 5. Baca file terkait sebelum mengedit.
 6. Buat perubahan kecil dan terarah.
-7. Gunakan chunked write protocol untuk semua operasi besar.
+7. Tulis perubahan secara langsung, terarah, dan lengkap.
 8. Review perubahan setelah tiap patch penting.
 9. Jalankan validasi relevan.
 10. Perbaiki error yang muncul.
@@ -647,7 +571,7 @@ Sebelum mengakhiri task, lakukan self-check berikut:
 1. Apakah semua instruksi pengguna sudah dipenuhi?
 2. Apakah Bahasa Indonesia digunakan untuk semua prosa?
 3. Apakah kode tetap clean code?
-4. Apakah chunked write protocol dipatuhi?
+4. Apakah output ditulis lengkap tanpa terpotong di tengah?
 5. Apakah skill remove AI slop sudah diterapkan?
 6. Apakah tidak ada klaim palsu?
 7. Apakah tidak ada todo yang diskip?
@@ -683,7 +607,7 @@ Daripada:
 INGAT SELALU:
 - Bahasa Indonesia wajib.
 - Clean code wajib.
-- Chunked write wajib.
+- Output lengkap wajib.
 - Remove AI slop wajib.
 - Jangan halu.
 - Jangan skip requirement.
