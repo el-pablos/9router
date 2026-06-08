@@ -165,3 +165,43 @@ describe("Kiro → Claude (direct route, OpenAI-shaped chunks from executor)", (
     expect(md.delta.stop_reason).toBe("tool_use");
   });
 });
+
+
+describe("Claude → Kiro: token budget + context enforcement (Bug A/B)", () => {
+  const C2Km = (model, body) =>
+    translateRequest(FORMATS.CLAUDE, FORMATS.KIRO, model, body, true, null, "kiro");
+
+  it("uses dynamic maxTokens per model family (not hardcoded 32000)", () => {
+    const body = { messages: [{ role: "user", content: "hi" }] };
+    expect(C2Km("claude-opus-4.8", body).inferenceConfig.maxTokens).toBe(32000);
+    expect(C2Km("claude-haiku-4.5", body).inferenceConfig.maxTokens).toBe(8192);
+    expect(C2Km("claude-sonnet-4.5", body).inferenceConfig.maxTokens).toBe(16384);
+  });
+
+  it("caps thinking budget at half of maxTokens so reasoning can't eat the whole output (Bug A)", () => {
+    // haiku output cap = 8192 → thinking budget = floor(8192/2) = 4096
+    const out = C2Km("claude-haiku-4.5-thinking", {
+      messages: [{ role: "user", content: "hi" }],
+    });
+    const content = out.conversationState.currentMessage.userInputMessage.content;
+    expect(content).toContain("<max_thinking_length>4096</max_thinking_length>");
+  });
+
+  it("throws a clear Indonesian error when a single turn exceeds the context window (Bug B: no silent stop)", () => {
+    const huge = "X".repeat(800000); // ~228k token > haiku 200k window
+    expect(() =>
+      C2Km("claude-haiku-4.5", { messages: [{ role: "user", content: huge }] })
+    ).toThrow(/Percakapan terlalu panjang/);
+  });
+
+  it("agentic model no longer injects the chunked-write protocol (Bug A root cause)", () => {
+    const out = C2Km("claude-sonnet-4.5-agentic", {
+      messages: [{ role: "user", content: "hi" }],
+    });
+    const content = out.conversationState.currentMessage.userInputMessage.content;
+    expect(content).not.toContain("CHUNKED WRITE");
+    expect(content).not.toContain("350");
+    // tapi mandat bahasa Indonesia tetap ada
+    expect(content).toContain("BAHASA INDONESIA");
+  });
+});
