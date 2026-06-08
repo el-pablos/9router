@@ -610,7 +610,7 @@ export function getModelContextConfig(model) {
 /**
  * Estimate total token usage of a built Kiro payload.
  */
-function estimatePayloadTokens(payload) {
+export function estimatePayloadTokens(payload) {
   let total = 0;
   const cs = payload.conversationState;
 
@@ -641,7 +641,7 @@ function estimatePayloadTokens(payload) {
  * Preserves at least the last 2 history entries (1 user + 1 assistant)
  * to maintain conversation coherence.
  */
-function truncateHistory(history, currentTokens, maxInputTokens) {
+export function truncateHistory(history, currentTokens, maxInputTokens) {
   const MIN_KEEP = 2;
   let trimmed = [...history];
   let tokens = currentTokens;

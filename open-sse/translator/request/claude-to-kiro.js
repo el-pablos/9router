@@ -30,7 +30,13 @@ import {
   isThinkingEnabled,
   buildThinkingSystemPrefix,
   KIRO_AGENTIC_SYSTEM_PROMPT,
+  KIRO_THINKING_BUDGET_DEFAULT,
 } from "../../config/kiroConstants.js";
+import {
+  getModelContextConfig,
+  estimatePayloadTokens,
+  truncateHistory,
+} from "./openai-to-kiro.js";
 
 /** Stringify a tool_use input as a readable line. */
 function toolUseToText(name, input) {
@@ -367,7 +373,6 @@ export function claudeToKiroRequest(model, body, stream, credentials) {
   let messages = Array.isArray(body.messages) ? body.messages : [];
   const tools = Array.isArray(body.tools) ? body.tools : [];
   const clientProvidedTools = tools.length > 0;
-  const maxTokens = body.max_tokens || 32000;
   const temperature = body.temperature;
   const topP = body.top_p;
 
@@ -378,6 +383,17 @@ export function claudeToKiroRequest(model, body, stream, credentials) {
   } = resolveKiroModel(model);
   const thinkingEnabled =
     modelImpliesThinking || isThinkingEnabled(body, null, model);
+
+  // Output cap per model family, konsisten dengan jalur OpenAI→Kiro.
+  const contextConfig = getModelContextConfig(model);
+  const maxTokens = body.max_tokens || contextConfig.maxOutputTokens;
+  // Kiro menghitung token reasoning ke dalam output cap yang sama, jadi batasi
+  // thinking budget maksimal setengah dari maxTokens. Ini menjamin jawaban
+  // selalu punya ruang dan tidak terpotong di tengah saat thinking aktif.
+  const thinkingBudget = Math.min(
+    KIRO_THINKING_BUDGET_DEFAULT,
+    Math.floor(maxTokens / 2)
+  );
 
   // Guard 1: no client tools → flatten all tool interactions to text.
   if (!clientProvidedTools) {
@@ -413,7 +429,7 @@ export function claudeToKiroRequest(model, body, stream, credentials) {
   // Prefix order: thinking_mode tag, timestamp marker, then agentic prompt.
   const timestamp = new Date().toISOString();
   const prefixParts = [];
-  if (thinkingEnabled) prefixParts.push(buildThinkingSystemPrefix());
+  if (thinkingEnabled) prefixParts.push(buildThinkingSystemPrefix(thinkingBudget));
   prefixParts.push(`[Context: Current time is ${timestamp}]`);
   if (agentic) prefixParts.push(KIRO_AGENTIC_SYSTEM_PROMPT);
   finalContent = `${prefixParts.join("\n\n")}\n\n${finalContent}`;
@@ -447,6 +463,27 @@ export function claudeToKiroRequest(model, body, stream, credentials) {
     if (maxTokens) payload.inferenceConfig.maxTokens = maxTokens;
     if (temperature !== undefined) payload.inferenceConfig.temperature = temperature;
     if (topP !== undefined) payload.inferenceConfig.topP = topP;
+  }
+
+  // Context-window enforcement: pangkas history tertua bila payload melebihi
+  // input budget model, lalu gagal LANTANG bila tetap kebesaran. Tanpa ini jalur
+  // Anthropic-native overflow ke Kiro secara senyap dan stream berhenti tanpa
+  // error (request setelah compaction pun mengulang dari awal). Mirror jalur
+  // OpenAI→Kiro.
+  const maxInputBudget = contextConfig.maxInputTokens - maxTokens;
+  const estimatedTokens = estimatePayloadTokens(payload);
+  if (estimatedTokens > maxInputBudget) {
+    const { history: trimmedHistory, estimatedTokens: newEstimate } =
+      truncateHistory(payload.conversationState.history, estimatedTokens, maxInputBudget);
+    payload.conversationState.history = trimmedHistory;
+    if (newEstimate > maxInputBudget) {
+      const pct = Math.round((newEstimate / maxInputBudget) * 100);
+      throw new Error(
+        `[9router] Percakapan terlalu panjang untuk model ${model}. ` +
+        `Estimasi ~${Math.round(newEstimate / 1000)}k token vs limit ~${Math.round(maxInputBudget / 1000)}k token (${pct}%). ` +
+        `Solusi: mulai percakapan baru, atau gunakan model dengan context lebih besar (mis. Opus).`
+      );
+    }
   }
 
   // Non-enumerable hint so the executor can route the upstream model id.
