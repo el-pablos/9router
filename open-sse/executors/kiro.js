@@ -81,7 +81,8 @@ export class KiroExecutor extends BaseExecutor {
       hasReasoningContent: false,
       reasoningChunkCount: 0,
       toolCallIndex: 0,
-      seenToolIds: new Map()
+      seenToolIds: new Map(),
+      errorMessage: null
     };
 
     const transformStream = new TransformStream({
@@ -111,6 +112,23 @@ export class KiroExecutor extends BaseExecutor {
           if (!event) continue;
 
           const eventType = event.headers[":event-type"] || "";
+
+          // Deteksi frame exception/error AWS EventStream. Kiro menyur면kan
+          // kegagalan upstream (context overflow, throttling, internal error)
+          // sebagai frame dengan :message-type=exception, BUKAN :event-type biasa.
+          // Tanpa penanganan ini frame tersebut dibuang diam-diam dan stream
+          // ditutup dengan "stop" bersih, sehingga klien melihat respons berhenti
+          // di tengah tanpa error sama sekali.
+          const messageType = event.headers[":message-type"] || "";
+          const exceptionType =
+            event.headers[":exception-type"] || event.headers[":error-code"] || "";
+          if (messageType === "exception" || messageType === "error" || exceptionType) {
+            const errPayload = event.payload || {};
+            const detail =
+              errPayload.message || errPayload.Message || errPayload.reason || "";
+            state.errorMessage = `${exceptionType || "UpstreamError"}${detail ? `: ${detail}` : ""}`;
+            continue;
+          }
 
           // Track total content length for token estimation
           if (!state.totalContentLength) state.totalContentLength = 0;
@@ -376,9 +394,32 @@ export class KiroExecutor extends BaseExecutor {
       },
 
       flush(controller) {
-        // Emit finish chunk if not already sent
+        // Emit finish chunk jika belum terkirim. Sampai di flush() TANPA terminal
+        // event (messageStop / metering+context) berarti stream upstream terputus
+        // — context overflow, timeout upstream, atau koneksi drop. Surface secara
+        // LANTANG, bukan "stop" senyap:
+        //  - inject note terlihat supaya pengguna tahu KENAPA respons berhenti
+        //  - set finish_reason "length" (→ Claude "max_tokens") supaya klien tahu
+        //    respons tidak lengkap, bukan end_turn normal.
         if (!state.finishEmitted) {
           state.finishEmitted = true;
+
+          const note = state.errorMessage
+            ? `\n\n[9router] Respons Kiro terhenti: ${state.errorMessage}`
+            : `\n\n[9router] Respons terpotong sebelum selesai (kemungkinan limit context/output upstream). Mulai percakapan baru atau kurangi panjang input.`;
+          const noteChunk = {
+            id: responseId,
+            object: "chat.completion.chunk",
+            created,
+            model,
+            choices: [{
+              index: 0,
+              delta: { content: note },
+              finish_reason: null
+            }]
+          };
+          controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(noteChunk)}\n\n`));
+
           const finishChunk = {
             id: responseId,
             object: "chat.completion.chunk",
@@ -387,7 +428,7 @@ export class KiroExecutor extends BaseExecutor {
             choices: [{
               index: 0,
               delta: {},
-              finish_reason: state.hasToolCalls ? "tool_calls" : "stop"
+              finish_reason: state.hasToolCalls ? "tool_calls" : "length"
             }]
           };
           controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(finishChunk)}\n\n`));
