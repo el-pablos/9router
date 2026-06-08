@@ -67,6 +67,7 @@ package-lock.json
 .github/instructions/codacy.instructions.md
 README1.md
 deploy*.sh
+!deploy.sh
 ecosystem.config.*
 
 scripts/agSniffer/*
@@ -87,3 +88,15 @@ screenshots/
 
 
 .codegraph/
+
+## AI session artifacts (jangan di-track)
+.omc/
+.omo/
+.sisyphus/
+.opencode-jce/
+.playwright-mcp/
+.opencode-context.md
+.opencode-context-archive.md
+conversation.md
+sessionku.md
+session-*.md
