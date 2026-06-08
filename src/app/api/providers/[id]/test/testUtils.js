@@ -227,8 +227,10 @@ async function testOAuthConnection(connection, effectiveProxy = null) {
   if (!config) return { valid: false, error: "Provider test not supported", refreshed: false };
   if (!connection.accessToken) return { valid: false, error: "No access token", refreshed: false };
 
-  // Cursor uses protobuf API - can only verify token exists, not test endpoint
-  if (config.tokenExists) {
+  // Cursor uses protobuf API - can only verify token exists, not test endpoint.
+  // Imported ChatGPT access tokens (authType access_token) are non-refreshable
+  // agent-identity tokens — verify presence only, never probe the Codex backend.
+  if (config.tokenExists || connection.authType === "access_token") {
     return { valid: true, error: null, refreshed: false, newTokens: null };
   }
 

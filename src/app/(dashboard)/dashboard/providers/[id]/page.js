@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Card, Button, Badge, Input, Modal, CardSkeleton, OAuthModal, KiroOAuthWrapper, CursorAuthModal, IFlowCookieModal, GitLabAuthModal, Toggle, Select, EditConnectionModal, NoAuthProxyCard, ConfirmModal } from "@/shared/components";
+import { Card, Button, Badge, Input, Modal, CardSkeleton, OAuthModal, KiroOAuthWrapper, CursorAuthModal, IFlowCookieModal, GitLabAuthModal, Toggle, Select, EditConnectionModal, NoAuthProxyCard, ConfirmModal, CodexSessionImportModal } from "@/shared/components";
 import { OAUTH_PROVIDERS, APIKEY_PROVIDERS, FREE_PROVIDERS, FREE_TIER_PROVIDERS, WEB_COOKIE_PROVIDERS, getProviderAlias, isOpenAICompatibleProvider, isAnthropicCompatibleProvider, AI_PROVIDERS, THINKING_CONFIG } from "@/shared/constants/providers";
 import { getModelsByProviderId } from "@/shared/constants/models";
 import { useCopyToClipboard } from "@/shared/hooks/useCopyToClipboard";
@@ -35,6 +35,7 @@ export default function ProviderDetailPage() {
   const [proxyPools, setProxyPools] = useState([]);
   const [showOAuthModal, setShowOAuthModal] = useState(false);
   const [showIFlowCookieModal, setShowIFlowCookieModal] = useState(false);
+  const [showCodexImportModal, setShowCodexImportModal] = useState(false);
   const [showAddApiKeyModal, setShowAddApiKeyModal] = useState(false);
   const [addConnectionError, setAddConnectionError] = useState("");
   const [showBulkImportCodex, setShowBulkImportCodex] = useState(false);
@@ -1325,6 +1326,11 @@ export default function ProviderDetailPage() {
                 </div>
               </div>
               <div className="flex gap-2">
+                {providerId === "codex" && (
+                  <Button size="sm" icon="upload" variant="secondary" onClick={() => setShowCodexImportModal(true)}>
+                    Import ChatGPT Session
+                  </Button>
+                )}
                 {hasDualAuthModes ? (
                   <>
                     <Button size="sm" icon="lock" variant="secondary" onClick={triggerOAuthConnection}>
@@ -1378,6 +1384,18 @@ export default function ProviderDetailPage() {
               {connectionsList}
               {!isCompatible && (
                 <div className="mt-4 grid grid-cols-1 gap-2 sm:flex">
+                  {providerId === "codex" && (
+                    <Button
+                      size="sm"
+                      icon="upload"
+                      variant="secondary"
+                      onClick={() => setShowCodexImportModal(true)}
+                      title="Import a ChatGPT session JSON"
+                      className="w-full sm:w-auto"
+                    >
+                      Import ChatGPT Session
+                    </Button>
+                  )}
                   {providerId === "iflow" && (
                     <Button
                       size="sm"
@@ -1510,6 +1528,13 @@ export default function ProviderDetailPage() {
           isOpen={showIFlowCookieModal}
           onSuccess={handleIFlowCookieSuccess}
           onClose={() => setShowIFlowCookieModal(false)}
+        />
+      )}
+      {providerId === "codex" && (
+        <CodexSessionImportModal
+          isOpen={showCodexImportModal}
+          onSuccess={fetchConnections}
+          onClose={() => setShowCodexImportModal(false)}
         />
       )}
       <AddApiKeyModal

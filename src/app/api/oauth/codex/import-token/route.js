@@ -11,7 +11,7 @@ import { extractCodexAccountInfo } from "@/lib/oauth/providers";
  */
 export async function POST(request) {
   try {
-    const { accessToken, name } = await request.json();
+    const { accessToken, name, account } = await request.json();
 
     if (!accessToken || typeof accessToken !== "string") {
       return NextResponse.json(
@@ -63,6 +63,20 @@ export async function POST(request) {
       if (info.email) email = info.email;
       if (info.chatgptAccountId) providerSpecificData.chatgptAccountId = info.chatgptAccountId;
       if (info.chatgptPlanType) providerSpecificData.chatgptPlanType = info.chatgptPlanType;
+    }
+
+    // Fallback to top-level session JSON account info when the JWT omits it
+    if (!providerSpecificData.chatgptAccountId && account?.id) {
+      providerSpecificData.chatgptAccountId = account.id;
+    }
+    if (!providerSpecificData.chatgptPlanType && account?.planType) {
+      providerSpecificData.chatgptPlanType = account.planType;
+    }
+    // Mirror chatgptAccountId to workspaceId — the Codex executor reads
+    // providerSpecificData.workspaceId to send the chatgpt-account-id header
+    // and to scope the prompt-cache session id.
+    if (providerSpecificData.chatgptAccountId) {
+      providerSpecificData.workspaceId = providerSpecificData.chatgptAccountId;
     }
 
     const connectionName = name || email || "ChatGPT Access Token";

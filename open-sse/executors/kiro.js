@@ -2,6 +2,9 @@ import { BaseExecutor } from "./base.js";
 import { PROVIDERS } from "../config/providers.js";
 import { v4 as uuidv4 } from "uuid";
 import { refreshKiroToken } from "../services/tokenRefresh.js";
+import { proxyAwareFetch } from "../utils/proxyFetch.js";
+import { HTTP_STATUS, RETRY_CONFIG, DEFAULT_RETRY_CONFIG, resolveRetryEntry } from "../config/runtimeConfig.js";
+import { getModelContextConfig } from "../translator/request/openai-to-kiro.js";
 
 /**
  * KiroExecutor - Executor for Kiro AI (AWS CodeWhisperer)
@@ -327,9 +330,10 @@ export class KiroExecutor extends BaseExecutor {
                 : 0;
 
               // Estimate input tokens from contextUsagePercentage
-              // Kiro models typically have 200k context window
+              // Opus uses 1M context, others use 200k (from getModelContextConfig)
+              const contextWindow = getModelContextConfig(model).maxInputTokens;
               const estimatedInputTokens = state.contextUsagePercentage > 0
-                ? Math.floor(state.contextUsagePercentage * 200000 / 100)
+                ? Math.floor(state.contextUsagePercentage * contextWindow / 100)
                 : 0;
 
               state.usage = {

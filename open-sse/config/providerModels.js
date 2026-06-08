@@ -133,16 +133,28 @@ export const PROVIDER_MODELS = {
     { id: "qwen3-coder-next", name: "Qwen3 Coder Next", strip: ["image", "audio"] },
     { id: "glm-5", name: "GLM 5" },
     { id: "MiniMax-M2.5", name: "MiniMax M2.5" },
+    { id: "claude-opus-4.6", name: "Claude Opus 4.6" },
+    { id: "claude-opus-4.7", name: "Claude Opus 4.7" },
+    { id: "claude-sonnet-4.6", name: "Claude Sonnet 4.6" },
     // --- Thinking variants (alias to base; thinking is enabled at request time
     //     via <thinking_mode>enabled</thinking_mode> system-prompt injection) ---
     { id: "claude-sonnet-4.5-thinking", name: "Claude Sonnet 4.5 (Thinking)" },
     { id: "claude-haiku-4.5-thinking", name: "Claude Haiku 4.5 (Thinking)" },
-    // --- Agentic variants (synthetic; same upstream model + chunked-write
+    { id: "claude-opus-4.6-thinking", name: "Claude Opus 4.6 (Thinking)" },
+    { id: "claude-opus-4.7-thinking", name: "Claude Opus 4.7 (Thinking)" },
+    { id: "claude-opus-4.8-thinking", name: "Claude Opus 4.8 (Thinking)" },
+    // --- Agentic variants (synthetic; same upstream model
     //     system prompt to dodge Kiro's 2-3 min server timeout on big writes) ---
     { id: "claude-sonnet-4.5-agentic", name: "Claude Sonnet 4.5 (Agentic)" },
     { id: "claude-haiku-4.5-agentic", name: "Claude Haiku 4.5 (Agentic)" },
     { id: "claude-sonnet-4.5-thinking-agentic", name: "Claude Sonnet 4.5 (Thinking + Agentic)" },
     { id: "claude-haiku-4.5-thinking-agentic", name: "Claude Haiku 4.5 (Thinking + Agentic)" },
+    { id: "claude-opus-4.5-thinking-agentic", name: "Claude Opus 4.5 (Thinking + Agentic)" },
+    { id: "claude-opus-4.6-thinking-agentic", name: "Claude Opus 4.6 (Thinking + Agentic)" },
+    { id: "claude-opus-4.7-thinking-agentic", name: "Claude Opus 4.7 (Thinking + Agentic)" },
+    { id: "claude-opus-4.8-thinking-agentic", name: "Claude Opus 4.8 (Thinking + Agentic)" },
+    { id: "claude-sonnet-4.6-thinking-agentic", name: "Claude Sonnet 4.6 (Thinking + Agentic)" },
+    { id: "qwen3-coder-next-thinking-agentic", name: "Qwen3 Coder Next (Thinking + Agentic)", strip: ["image", "audio"] },
   ],
   qd: [  // Qoder - tier + frontier models (server-published catalog)
     // Tier models — pick a quality/cost tradeoff

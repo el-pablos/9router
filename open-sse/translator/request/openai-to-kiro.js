@@ -9,7 +9,7 @@ import {
   resolveKiroModel,
   isThinkingEnabled,
   buildThinkingSystemPrefix,
-  KIRO_AGENTIC_SYSTEM_PROMPT
+  KIRO_LANGUAGE_SYSTEM_PROMPT
 } from "../../config/kiroConstants.js";
 
 /** Render a single tool call as a readable text line. */
@@ -563,15 +563,129 @@ function convertMessages(messages, tools, model) {
   return { history: mergedHistory, currentMessage };
 }
 
+// ─── Context-window helpers (Fix: content-length-exceed-threshold) ───────────
+
+/**
+ * Rough token estimation: ~4 chars per token for mixed English/code.
+ * Conservative (over-estimates slightly) to avoid hitting upstream limits.
+ */
+function estimateTokens(text) {
+  if (!text) return 0;
+  return Math.ceil(text.length / 3.5);
+}
+
+/**
+ * Per-model context configuration.
+ *
+ * Opus 4.6, 4.7, 4.8: Kiro upstream exposes NO 200k SKU for these models —
+ * they always run with a 1M (1,000,000 token) context window.
+ * Evidence: github.com/d-kuro/kirocc commit abeb2ab (Opus 4.6/4.7) and
+ * b95c6e9 (Opus 4.8), internal/models/models.go ThinkingContextWindowSize.
+ *
+ * Haiku / Sonnet: empirically verified at 200k (Haiku processed ~176k,
+ * Sonnet ~159k input tokens without upstream rejection).
+ *
+ * maxOutputTokens stays per-family so smaller models reserve less of the
+ * window for output.
+ */
+// Opus versions whose Kiro upstream has NO 200k SKU and always run at 1M.
+// Evidence: github.com/d-kuro/kirocc README model table + internal/models/models.go
+// (Opus 4.6/4.7/4.8 pinned to 1M; Opus 4.5 and earlier remain 200k).
+const OPUS_1M_VERSIONS = ["opus-4.6", "opus-4.7", "opus-4.8"];
+
+export function getModelContextConfig(model) {
+  const m = (model || "").toLowerCase();
+  if (m.includes("opus")) {
+    // Only Opus 4.6/4.7/4.8 use 1M upstream; Opus 4.5 and earlier stay at 200k.
+    const maxInputTokens = OPUS_1M_VERSIONS.some((v) => m.includes(v)) ? 1000000 : 200000;
+    return { maxInputTokens, maxOutputTokens: 32000 };
+  }
+  if (m.includes("haiku")) {
+    return { maxInputTokens: 200000, maxOutputTokens: 8192 };
+  }
+  // Sonnet and others default to 200k.
+  return { maxInputTokens: 200000, maxOutputTokens: 16384 };
+}
+
+/**
+ * Estimate total token usage of a built Kiro payload.
+ */
+function estimatePayloadTokens(payload) {
+  let total = 0;
+  const cs = payload.conversationState;
+
+  // Current message content
+  total += estimateTokens(cs.currentMessage?.userInputMessage?.content);
+
+  // Tool definitions (can be large)
+  const tools = cs.currentMessage?.userInputMessage?.userInputMessageContext?.tools;
+  if (tools) total += estimateTokens(JSON.stringify(tools));
+
+  // History turns
+  for (const msg of (cs.history || [])) {
+    if (msg.userInputMessage) {
+      total += estimateTokens(msg.userInputMessage.content);
+      if (msg.userInputMessage.userInputMessageContext) {
+        total += estimateTokens(JSON.stringify(msg.userInputMessage.userInputMessageContext));
+      }
+    } else if (msg.assistantResponseMessage) {
+      total += estimateTokens(msg.assistantResponseMessage.content);
+    }
+  }
+
+  return total;
+}
+
+/**
+ * Truncate history from oldest until estimated tokens fit within budget.
+ * Preserves at least the last 2 history entries (1 user + 1 assistant)
+ * to maintain conversation coherence.
+ */
+function truncateHistory(history, currentTokens, maxInputTokens) {
+  const MIN_KEEP = 2;
+  let trimmed = [...history];
+  let tokens = currentTokens;
+
+  const tokOf = (entry) => {
+    const c = entry.userInputMessage?.content
+      || entry.assistantResponseMessage?.content || "";
+    const ctx = entry.userInputMessage?.userInputMessageContext
+      ? JSON.stringify(entry.userInputMessage.userInputMessageContext) : "";
+    return estimateTokens(c + ctx);
+  };
+
+  // 1) Drop oldest entries until within budget.
+  while (tokens > maxInputTokens && trimmed.length > MIN_KEEP) {
+    tokens -= tokOf(trimmed.shift());
+  }
+
+  // 2) Kiro requires history to START with a userInputMessage. Dropping an
+  //    odd number of entries can leave a leading assistantResponseMessage,
+  //    which upstream rejects with 400 "improperly formed request".
+  while (trimmed.length > 0 && !trimmed[0].userInputMessage) {
+    tokens -= tokOf(trimmed.shift());
+  }
+
+  // 3) Kiro requires history to END with an assistantResponseMessage (the
+  //    trailing user turn is sent separately as currentMessage). Drop any
+  //    dangling trailing user entry to keep strict alternation.
+  while (trimmed.length > 0 && !trimmed[trimmed.length - 1].assistantResponseMessage) {
+    tokens -= tokOf(trimmed.pop());
+  }
+
+  return { history: trimmed, estimatedTokens: tokens, truncated: trimmed.length < history.length };
+}
+
 /**
  * Build Kiro payload from OpenAI format
  *
- * Two 9router-specific behaviours implemented here:
+ * Three 9router-specific behaviours implemented here:
  *
- * 1. `-agentic` model suffix. Synthetic variant — same upstream model, but we
- *    inject a chunked-write system prompt to keep large file writes under
- *    Kiro's 2-3 minute server timeout. The suffix is stripped before being
- *    sent upstream.
+ * 1. `-agentic` model suffix. Pure synthetic alias — same upstream model. The
+ *    suffix is detected and stripped before the request leaves this process.
+ *    No write/chunk system prompt is injected: an earlier "chunked-write"
+ *    prompt was removed because it caused upstream write-timeout aborts and
+ *    made the model deliberate over write size instead of just writing.
  *
  * 2. Thinking / reasoning. Kiro does not accept `thinking.type` or
  *    `reasoning_effort` natively. The only way to enable reasoning is to
@@ -579,15 +693,19 @@ function convertMessages(messages, tools, model) {
  *    sent upstream. Detection covers Anthropic-Beta header, Claude API
  *    `thinking`, OpenAI `reasoning_effort`, AMP/Cursor magic tags, and model
  *    name hints.
+ *
+ * 3. Language policy. `KIRO_LANGUAGE_SYSTEM_PROMPT` (Bahasa Indonesia mandate)
+ *    is prepended to every request so replies default to Indonesian.
  */
 export function buildKiroPayload(model, body, stream, credentials) {
   const messages = body.messages || [];
   const tools = body.tools || [];
-  const maxTokens = 32000;
+  const contextConfig = getModelContextConfig(model);
+  const maxTokens = contextConfig.maxOutputTokens;
   const temperature = body.temperature;
   const topP = body.top_p;
 
-  const { upstream: upstreamModel, agentic, thinking: modelImpliesThinking } = resolveKiroModel(model);
+  const { upstream: upstreamModel, thinking: modelImpliesThinking } = resolveKiroModel(model);
   const thinkingEnabled = modelImpliesThinking || isThinkingEnabled(body, null, model);
 
   const { history, currentMessage } = convertMessages(messages, tools, upstreamModel);
@@ -600,15 +718,13 @@ export function buildKiroPayload(model, body, stream, credentials) {
 
   // Build the system-prompt prefix that goes ABOVE the user message body.
   // Order: thinking_mode tag first (so Kiro sees it before any user text),
-  // then context/timestamp marker, then optional agentic chunked-write prompt.
+  // then context/timestamp marker, then the language policy.
   const prefixParts = [];
   if (thinkingEnabled) {
     prefixParts.push(buildThinkingSystemPrefix());
   }
   prefixParts.push(`[Context: Current time is ${timestamp}]`);
-  if (agentic) {
-    prefixParts.push(KIRO_AGENTIC_SYSTEM_PROMPT);
-  }
+  prefixParts.push(KIRO_LANGUAGE_SYSTEM_PROMPT);
   finalContent = `${prefixParts.join("\n\n")}\n\n${finalContent}`;
 
   const payload = {
@@ -643,6 +759,26 @@ export function buildKiroPayload(model, body, stream, credentials) {
     if (topP !== undefined) payload.inferenceConfig.topP = topP;
   }
 
+  // ─── Context-window enforcement: truncate history + pre-flight validation ───
+  const maxInputBudget = contextConfig.maxInputTokens - maxTokens;
+  const estimatedTokens = estimatePayloadTokens(payload);
+
+  if (estimatedTokens > maxInputBudget) {
+    const { history: trimmedHistory, estimatedTokens: newEstimate, truncated } =
+      truncateHistory(payload.conversationState.history, estimatedTokens, maxInputBudget);
+
+    payload.conversationState.history = trimmedHistory;
+
+    // Pre-flight: if STILL over after max truncation, reject with clear message
+    if (newEstimate > maxInputBudget) {
+      const pct = Math.round((newEstimate / maxInputBudget) * 100);
+      throw new Error(
+        `[9router] Percakapan terlalu panjang untuk model ${model}. ` +
+        `Estimasi ~${Math.round(newEstimate / 1000)}k token vs limit ~${Math.round(maxInputBudget / 1000)}k token (${pct}%). ` +
+        `Solusi: mulai percakapan baru, atau gunakan model dengan context lebih besar (mis. Opus).`
+      );
+    }
+  }
   // Tag payload so the executor can route the upstream model id correctly.
   Object.defineProperty(payload, "_kiroUpstreamModel", {
     value: upstreamModel,

@@ -19,6 +19,9 @@ export default function KiroAuthModal({ isOpen, onMethodSelect, onClose }) {
   const [importing, setImporting] = useState(false);
   const [autoDetecting, setAutoDetecting] = useState(false);
   const [autoDetected, setAutoDetected] = useState(false);
+  const [bulkMode, setBulkMode] = useState(false);
+  const [bulkTokens, setBulkTokens] = useState("");
+  const [bulkResult, setBulkResult] = useState(null);
 
   // Auto-detect token when import method is selected
   useEffect(() => {
@@ -60,6 +63,45 @@ export default function KiroAuthModal({ isOpen, onMethodSelect, onClose }) {
   };
 
   const handleImportToken = async () => {
+    // Bulk mode: one refresh token per line, fault-isolated on the server.
+    if (bulkMode) {
+      const tokens = bulkTokens
+        .split("\n")
+        .map((t) => t.trim())
+        .filter(Boolean);
+      if (tokens.length === 0) {
+        setError("Please enter at least one refresh token (one per line)");
+        return;
+      }
+
+      setImporting(true);
+      setError(null);
+      setBulkResult(null);
+
+      try {
+        const res = await fetch("/api/oauth/kiro/import", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ refreshTokens: tokens }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Import failed");
+        }
+
+        // Show the per-token summary; parent refresh happens on Done.
+        setBulkResult(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setImporting(false);
+      }
+      return;
+    }
+
+    // Single mode (backward-compatible).
     if (!refreshToken.trim()) {
       setError("Please enter a refresh token");
       return;
@@ -450,32 +492,108 @@ export default function KiroAuthModal({ isOpen, onMethodSelect, onClose }) {
                   </div>
                 )}
 
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Refresh Token <span className="text-red-500">*</span>
-                  </label>
-                  <Input
-                    value={refreshToken}
-                    onChange={(e) => setRefreshToken(e.target.value)}
-                    placeholder="Token will be auto-filled..."
-                    className="font-mono text-sm"
-                  />
-                </div>
-
-                {error && (
-                  <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded-lg border border-red-200 dark:border-red-800">
-                    <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+                {/* Single / Bulk mode toggle */}
+                {!bulkResult && (
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => { setBulkMode(false); setError(null); }}
+                      className={`flex-1 px-3 py-2 text-sm rounded-lg border transition-colors ${!bulkMode ? "border-primary bg-primary/10 text-primary font-medium" : "border-border hover:bg-sidebar"}`}
+                    >
+                      Single Token
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setBulkMode(true); setError(null); }}
+                      className={`flex-1 px-3 py-2 text-sm rounded-lg border transition-colors ${bulkMode ? "border-primary bg-primary/10 text-primary font-medium" : "border-border hover:bg-sidebar"}`}
+                    >
+                      Bulk Import
+                    </button>
                   </div>
                 )}
 
-                <div className="flex gap-2">
-                  <Button onClick={handleImportToken} fullWidth disabled={importing || !refreshToken.trim()}>
-                    {importing ? "Importing..." : "Import Token"}
-                  </Button>
-                  <Button onClick={handleBack} variant="ghost" fullWidth>
-                    Back
-                  </Button>
-                </div>
+                {/* Bulk result summary */}
+                {bulkResult && (
+                  <div className="space-y-3">
+                    <div className="bg-sidebar p-3 rounded-lg border border-border">
+                      <p className="text-sm font-medium">
+                        Imported {bulkResult.summary.succeeded} / {bulkResult.summary.total} token(s)
+                        {bulkResult.summary.failed > 0 && ` — ${bulkResult.summary.failed} failed`}
+                      </p>
+                    </div>
+                    <div className="max-h-48 overflow-y-auto space-y-1">
+                      {bulkResult.results.map((r, i) => (
+                        <div
+                          key={i}
+                          className={`flex items-center gap-2 text-xs p-2 rounded ${r.ok ? "bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200" : "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300"}`}
+                        >
+                          <span className="material-symbols-outlined text-sm">
+                            {r.ok ? "check_circle" : "error"}
+                          </span>
+                          <span className="font-mono">{r.token}</span>
+                          <span className="ml-auto truncate">
+                            {r.ok ? (r.connection?.email || "imported") : r.error}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    <Button onClick={() => onMethodSelect("import")} fullWidth>
+                      Done
+                    </Button>
+                  </div>
+                )}
+
+                {/* Token input (single or bulk) */}
+                {!bulkResult && (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">
+                        {bulkMode ? "Refresh Tokens (one per line)" : "Refresh Token"}{" "}
+                        <span className="text-red-500">*</span>
+                      </label>
+                      {bulkMode ? (
+                        <textarea
+                          value={bulkTokens}
+                          onChange={(e) => setBulkTokens(e.target.value)}
+                          placeholder="One refresh token per line, e.g. aorAAAAAG..."
+                          rows={6}
+                          className="w-full px-3 py-2 text-sm font-mono border border-border rounded-lg bg-background focus:outline-none focus:border-primary resize-none"
+                        />
+                      ) : (
+                        <Input
+                          value={refreshToken}
+                          onChange={(e) => setRefreshToken(e.target.value)}
+                          placeholder="Token will be auto-filled..."
+                          className="font-mono text-sm"
+                        />
+                      )}
+                      {bulkMode && (
+                        <p className="text-xs text-text-muted mt-1">
+                          Each token is validated and imported independently; one bad token won&apos;t abort the rest.
+                        </p>
+                      )}
+                    </div>
+
+                    {error && (
+                      <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded-lg border border-red-200 dark:border-red-800">
+                        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+                      </div>
+                    )}
+
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={handleImportToken}
+                        fullWidth
+                        disabled={importing || (bulkMode ? !bulkTokens.trim() : !refreshToken.trim())}
+                      >
+                        {importing ? "Importing..." : bulkMode ? "Import Tokens" : "Import Token"}
+                      </Button>
+                      <Button onClick={handleBack} variant="ghost" fullWidth>
+                        Back
+                      </Button>
+                    </div>
+                  </>
+                )}
               </>
             )}
           </div>

@@ -235,10 +235,14 @@ export class CodexExecutor extends BaseExecutor {
     headers["session_id"] = this._currentSessionId || credentials?.connectionId || "default";
     // Identify client type to Codex backend (matches official codex CLI)
     if (!headers["originator"]) headers["originator"] = "codex_cli_rs";
-    // Workspace binding header — improves account scope + cache affinity
-    const workspaceId = credentials?.providerSpecificData?.workspaceId;
-    if (typeof workspaceId === "string" && workspaceId && !headers["chatgpt-account-id"]) {
-      headers["chatgpt-account-id"] = workspaceId;
+    // Workspace binding header — improves account scope + cache affinity.
+    // New imports store workspaceId; older imported rows may only carry
+    // chatgptAccountId, so fall back to it (workspaceId wins when both set).
+    const accountId =
+      credentials?.providerSpecificData?.workspaceId ||
+      credentials?.providerSpecificData?.chatgptAccountId;
+    if (typeof accountId === "string" && accountId && !headers["chatgpt-account-id"]) {
+      headers["chatgpt-account-id"] = accountId;
     }
     return headers;
   }
