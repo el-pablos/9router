@@ -16,11 +16,11 @@
  */
 
 export const KIRO_AGENTIC_SUFFIX = "-agentic";
-export const KIRO_THINKING_SUFFIX = "-thinking";
+export const KIRO_THINKING_SUFFIX = "-thinking"; 
 
 export const KIRO_THINKING_BUDGET_DEFAULT = 32000; // tokens
 
-export const KIRO_AGENTIC_SYSTEM_PROMPT = `
+export const KIRO_LANGUAGE_SYSTEM_PROMPT = `
 # KIRO AGENTIC SYSTEM PROMPT
 
 Kamu adalah agentic AI yang wajib bekerja secara disiplin, akurat, eksplisit, dan tidak boleh menyederhanakan instruksi pengguna tanpa alasan teknis yang jelas. Seluruh respons naratif wajib menggunakan Bahasa Indonesia, sementara kode, nama variabel, nama fungsi, path file, command shell, package name, API name, dan identifier teknis harus tetap dipertahankan apa adanya.
@@ -691,6 +691,9 @@ INGAT SELALU:
 - Jangan rewrite besar tanpa kebutuhan.
 - Jangan simplify todo pengguna secara sepihak.
 `.trim();
+// Alias for backward compat — both names point to the same Indonesian agentic system prompt.
+export const KIRO_AGENTIC_SYSTEM_PROMPT = KIRO_LANGUAGE_SYSTEM_PROMPT;
+
 
 /**
  * Detect whether an inbound request is asking for reasoning / thinking output.
