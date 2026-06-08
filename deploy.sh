@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 # deploy.sh - 9Router deployment script
 # Usage: ./deploy.sh [target]
-# Targets: docker | railway | fly | build
+# Targets: pm2 | docker | railway | fly | build
 #
 # Prerequisites:
 #   - Docker installed (for docker target)
 #   - Railway CLI logged in (for railway target)
 #   - Fly.io CLI logged in (for fly target)
+#   - PM2 installed (for pm2 target)
+#
 
 set -euo pipefail
 
@@ -14,6 +16,7 @@ APP_NAME="9router"
 VERSION=$(node -p "require('./package.json').version")
 IMAGE="ghcr.io/el-pablos/9router:${VERSION}"
 LATEST_IMAGE="ghcr.io/el-pablos/9router:latest"
+PM2_APP="9router-source-20129"
 
 # Colors
 RED='\033[0;31m'
@@ -26,13 +29,60 @@ warn() { echo -e "${YELLOW}[${APP_NAME}] WARN:${NC} $1"; }
 error() { echo -e "${RED}[${APP_NAME}] ERROR:${NC} $1" >&2; }
 
 # Detect target
-TARGET="${1:-docker}"
+TARGET="${1:-pm2}"
 
 cd "$(dirname "$0")"
 
 log "Deploying ${APP_NAME} v${VERSION} to ${TARGET}..."
 
 case "${TARGET}" in
+  pm2)
+    # Step 1: Build
+    log "Step 1/4 — Building..."
+    npm install --legacy-peer-deps
+    npm run build
+
+    # Step 2: Sync static assets to standalone output
+    # Next.js standalone build does NOT include static/public — must copy manually
+    log "Step 2/4 — Syncing static assets..."
+    rsync -a --delete .next/static/ .next/standalone/.next/static/
+    rsync -a --delete public/       .next/standalone/public/
+
+    # Verify BUILD_ID match
+    main_bid=$(cat .next/BUILD_ID)
+    st_bid=$(cat .next/standalone/.next/BUILD_ID)
+    if [ "$main_bid" != "$st_bid" ]; then
+      error "BUILD_ID mismatch! main=${main_bid} standalone=${st_bid}"
+      exit 1
+    fi
+    log "  BUILD_ID: ${main_bid} ✓"
+
+    # Step 3: Restart PM2
+    log "Step 3/4 — Restarting PM2 (${PM2_APP})..."
+    NODE_ENV=production PORT=20129 HOSTNAME=127.0.0.1 \
+      BASE_URL=https://proxy.tams.codes \
+      NEXT_PUBLIC_BASE_URL=https://proxy.tams.codes \
+      CLOUD_URL=https://proxy.tams.codes \
+      NEXT_PUBLIC_CLOUD_URL=https://proxy.tams.codes \
+      pm2 restart "${PM2_APP}" --update-env
+
+    # Step 4: Save PM2 state for reboot resurrect
+    log "Step 4/4 — Saving PM2 state..."
+    pm2 save
+
+    # Verify health
+    sleep 3
+    HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' https://proxy.tams.codes/api/health)
+    if [ "$HTTP_CODE" = "200" ]; then
+      log "Health check: ${HTTP_CODE} ✓"
+    else
+      error "Health check failed: ${HTTP_CODE}"
+      exit 1
+    fi
+
+    log "PM2 deployment complete! v${VERSION}"
+    ;;
+
   docker)
     log "Building Docker image: ${IMAGE}"
     docker build \
@@ -92,11 +142,12 @@ case "${TARGET}" in
     echo "Usage: $0 [target]"
     echo ""
     echo "Targets:"
-    echo "  docker   - Build Docker image locally (default)"
-    echo "  railway  - Deploy to Railway"
-    echo "  fly      - Deploy to Fly.io"
-    echo "  build    - Build for production only"
-    echo "  test     - Build + run test suite"
+    echo "  pm2     - Build + sync static + restart PM2 + health check (default)"
+    echo "  docker  - Build Docker image locally"
+    echo "  railway - Deploy to Railway"
+    echo "  fly     - Deploy to Fly.io"
+    echo "  build   - Build for production only"
+    echo "  test    - Build + run test suite"
     exit 1
     ;;
 esac
