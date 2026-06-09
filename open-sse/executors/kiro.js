@@ -6,6 +6,45 @@ import { proxyAwareFetch } from "../utils/proxyFetch.js";
 import { HTTP_STATUS, RETRY_CONFIG, DEFAULT_RETRY_CONFIG, resolveRetryEntry } from "../config/runtimeConfig.js";
 import { getModelContextConfig } from "../translator/request/openai-to-kiro.js";
 
+// Flush buffered tool arguments at finish boundaries.
+// Kiro/CodeWhisperer streams toolUseEvent.input as PARTIAL OBJECTS that grow over
+// time (e.g. {command:"cat /home"} then {command:"cat /home/wxsys"}). Re-stringifying
+// each one and emitting it as an OpenAI argument delta produces overlapping prefixes
+// that concatenate into unparseable garbage downstream (Unterminated string).
+//
+// Fix: defer object-form payloads into state.toolArgsBuffered keyed by toolCallId,
+// keep only the latest canonical, and emit ONCE here as the complete arguments
+// string (the final object is the source of truth — intermediate states are noise).
+// String-form payloads are already concatenable deltas and emitted incrementally.
+export function flushBufferedToolArgs(state, controller, ctx) {
+  if (!state.toolArgsBuffered || state.toolArgsBuffered.size === 0) return;
+  const { responseId, created, model } = ctx;
+  for (const [toolCallId, info] of state.toolArgsBuffered) {
+    const alreadyEmitted = state.toolArgsEmitted.get(toolCallId) || "";
+    if (info.canonical && info.canonical !== alreadyEmitted) {
+      const argsChunk = {
+        id: responseId,
+        object: "chat.completion.chunk",
+        created,
+        model,
+        choices: [{
+          index: 0,
+          delta: {
+            tool_calls: [{
+              index: info.toolIndex,
+              function: { arguments: info.canonical }
+            }]
+          },
+          finish_reason: null
+        }]
+      };
+      controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(argsChunk)}\n\n`));
+      state.toolArgsEmitted.set(toolCallId, info.canonical);
+    }
+  }
+  state.toolArgsBuffered.clear();
+}
+
 /**
  * KiroExecutor - Executor for Kiro AI (AWS CodeWhisperer)
  * Uses AWS CodeWhisperer streaming API with AWS EventStream binary format
@@ -82,7 +121,9 @@ export class KiroExecutor extends BaseExecutor {
       reasoningChunkCount: 0,
       toolCallIndex: 0,
       seenToolIds: new Map(),
-      errorMessage: null
+      errorMessage: null,
+      toolArgsEmitted: new Map(),
+      toolArgsBuffered: new Map()
     };
 
     const transformStream = new TransformStream({
@@ -255,42 +296,37 @@ export class KiroExecutor extends BaseExecutor {
               }
 
               if (toolInput !== undefined) {
-                let argumentsStr;
-
                 if (typeof toolInput === 'string') {
-                  argumentsStr = toolInput;
-                } else if (typeof toolInput === 'object') {
-                  argumentsStr = JSON.stringify(toolInput);
-                } else {
-                  continue;
-                }
+                  state.toolArgsEmitted.set(toolCallId, (state.toolArgsEmitted.get(toolCallId) || "") + toolInput);
 
-                const argsChunk = {
-                  id: responseId,
-                  object: "chat.completion.chunk",
-                  created,
-                  model,
-                  choices: [{
-                    index: 0,
-                    delta: {
-                      tool_calls: [{
-                        index: toolIndex,
-                        function: {
-                          arguments: argumentsStr
-                        }
-                      }]
-                    },
-                    finish_reason: null
-                  }]
-                };
-                chunkIndex++;
-                controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(argsChunk)}\n\n`));
+                  const argsChunk = {
+                    id: responseId,
+                    object: "chat.completion.chunk",
+                    created,
+                    model,
+                    choices: [{
+                      index: 0,
+                      delta: {
+                        tool_calls: [{
+                          index: toolIndex,
+                          function: { arguments: toolInput }
+                        }]
+                      },
+                      finish_reason: null
+                    }]
+                  };
+                  chunkIndex++;
+                  controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(argsChunk)}\n\n`));
+                } else if (typeof toolInput === 'object') {
+                  state.toolArgsBuffered.set(toolCallId, { toolIndex, canonical: JSON.stringify(toolInput) });
+                }
               }
             }
           }
 
           // Handle messageStopEvent
           if (eventType === "messageStopEvent") {
+            flushBufferedToolArgs(state, controller, { responseId, created, model });
             const chunk = {
               id: responseId,
               object: "chat.completion.chunk",
@@ -339,7 +375,7 @@ export class KiroExecutor extends BaseExecutor {
           // Emit final chunk only after receiving BOTH meteringEvent AND contextUsageEvent
           if (state.hasMeteringEvent && state.hasContextUsage && !state.finishEmitted) {
             state.finishEmitted = true;
-
+            flushBufferedToolArgs(state, controller, { responseId, created, model });
             // Estimate tokens if not available from events
             if (!state.usage) {
               // Estimate output tokens from content length
@@ -403,6 +439,7 @@ export class KiroExecutor extends BaseExecutor {
         //    respons tidak lengkap, bukan end_turn normal.
         if (!state.finishEmitted) {
           state.finishEmitted = true;
+          flushBufferedToolArgs(state, controller, { responseId, created, model });
 
           const note = state.errorMessage
             ? `\n\n[9router] Respons Kiro terhenti: ${state.errorMessage}`
@@ -419,7 +456,6 @@ export class KiroExecutor extends BaseExecutor {
             }]
           };
           controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(noteChunk)}\n\n`));
-
           const finishChunk = {
             id: responseId,
             object: "chat.completion.chunk",
