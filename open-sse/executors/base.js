@@ -1,4 +1,4 @@
-import { HTTP_STATUS, RETRY_CONFIG, DEFAULT_RETRY_CONFIG, resolveRetryEntry, FETCH_CONNECT_TIMEOUT_MS } from "../config/runtimeConfig.js";
+import { HTTP_STATUS, RETRY_CONFIG, DEFAULT_RETRY_CONFIG, resolveRetryEntry, FETCH_CONNECT_TIMEOUT_MS, REASONING_CONNECT_TIMEOUT_MS } from "../config/runtimeConfig.js";
 import { shouldRefreshCredentials } from "../services/oauthCredentialManager.js";
 import { proxyAwareFetch } from "../utils/proxyFetch.js";
 import { dbg } from "../utils/debugLog.js";
@@ -146,16 +146,25 @@ export class BaseExecutor {
 
       if (!retryAttemptsByUrl[urlIndex]) retryAttemptsByUrl[urlIndex] = 0;
 
-      // Abort if upstream doesn't return response headers within connection timeout
+      // Determine the connect/header timeout dynamically (check both raw and transformed bodies)
+      let currentTimeout = this.config?.timeoutMs || FETCH_CONNECT_TIMEOUT_MS;
+      const hasReasoningConfig = (body && (body.reasoning_effort || body.thinking?.type === "enabled" || (body.reasoning && body.reasoning.effort && body.reasoning.effort !== "none"))) ||
+        (transformedBody && (transformedBody.reasoning_effort || transformedBody.thinking?.type === "enabled" || (transformedBody.reasoning && transformedBody.reasoning.effort && transformedBody.reasoning.effort !== "none")));
+      const isReasoning = hasReasoningConfig || model?.includes("reasoning") || model?.includes("thinking");
+      if (isReasoning) {
+        // Boost timeout for reasoning/thinking tasks to allow long calculation times (default: 5 mins)
+        currentTimeout = Math.max(currentTimeout, REASONING_CONNECT_TIMEOUT_MS);
+      }
+
+      // Abort if upstream doesn't return response headers within timeout
       const connectCtrl = new AbortController();
-      const timeoutMs = this.config?.timeoutMs || FETCH_CONNECT_TIMEOUT_MS;
-      const connectTimer = setTimeout(() => connectCtrl.abort(new Error("fetch connect timeout")), timeoutMs);
+      const connectTimer = setTimeout(() => connectCtrl.abort(new Error("fetch connect timeout")), currentTimeout);
       const mergedSignal = signal ? AbortSignal.any([signal, connectCtrl.signal]) : connectCtrl.signal;
 
       try {
         const bodyStr = JSON.stringify(transformedBody);
         const fetchT0 = Date.now();
-        dbg("FETCH", `${this.provider.toUpperCase()} → ${url} | body=${bodyStr.length}B | connectTimeout=${timeoutMs}ms`);
+        dbg("FETCH", `${this.provider.toUpperCase()} → ${url} | body=${bodyStr.length}B | connectTimeout=${currentTimeout}ms`);
         const response = await proxyAwareFetch(url, {
           method: "POST",
           headers,

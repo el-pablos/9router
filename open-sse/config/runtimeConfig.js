@@ -49,6 +49,9 @@ export const STREAM_STALL_TIMEOUT_MS = envMs("STREAM_STALL_TIMEOUT_MS", 180 * 10
 // Configurable via FETCH_CONNECT_TIMEOUT_MS env var (ms). Closes #1557.
 export const FETCH_CONNECT_TIMEOUT_MS = envMs("FETCH_CONNECT_TIMEOUT_MS", 60 * 1000);
 export const STREAM_FIRST_CHUNK_TIMEOUT_MS = envMs("STREAM_FIRST_CHUNK_TIMEOUT_MS", 200 * 1000);
+// Connect timeout boost specifically for reasoning / thinking models (which can block headers for minutes).
+// Configurable via REASONING_CONNECT_TIMEOUT_MS env var (ms).
+export const REASONING_CONNECT_TIMEOUT_MS = envMs("REASONING_CONNECT_TIMEOUT_MS", 5 * 60 * 1000);
 
 // Default token limits
 export const DEFAULT_MAX_TOKENS = 64000;

@@ -231,7 +231,14 @@ async function getDispatcher(proxyUrl) {
       proxyDispatchers.set(normalized, createSocksDispatcher(normalized));
     } else {
       const { ProxyAgent } = await import("undici");
-      proxyDispatchers.set(normalized, new ProxyAgent({ uri: normalized }));
+      const connectTimeout = parseInt(process.env.PROXY_CONNECT_TIMEOUT_MS, 10) || 90000;
+      const headersTimeout = parseInt(process.env.PROXY_HEADERS_TIMEOUT_MS, 10) || 300000;
+      proxyDispatchers.set(normalized, new ProxyAgent({
+        uri: normalized,
+        connectTimeout,
+        headersTimeout,
+        bodyTimeout: 0,
+      }));
     }
   }
 

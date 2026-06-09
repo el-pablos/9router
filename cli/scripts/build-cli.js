@@ -163,7 +163,7 @@ const standaloneRootResolved = path.join(buildDistDir, "standalone");
 const standaloneRootToUse = fs.existsSync(standaloneRootResolved) ? standaloneRootResolved : standaloneRoot;
 const standaloneApp = findStandaloneApp(standaloneRootToUse);
 if (!standaloneApp || !fs.existsSync(standaloneApp)) {
-  console.error("\u274c Next.js standalone build not found under .next/standalone");
+  console.error("❌ Next.js standalone build not found under .next/standalone");
   console.error("Expected .next/standalone/server.js, .next/standalone/app/, or a nested standalone app with server.js");
   process.exit(1);
 }
