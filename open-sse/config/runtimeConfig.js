@@ -36,10 +36,7 @@ export const MEMORY_CONFIG = {
 // while Claude reasons or compiles a response, so 30s caused false "stall"
 // aborts mid-conversation. The agentic system prompt itself notes the Kiro
 // upstream has a 2-3 minute timeout, so we match that ceiling here.
-export const STREAM_STALL_TIMEOUT_MS = 180 * 1000;
-// Fetch connect timeout: abort if upstream doesn't return response headers within this duration
-export const FETCH_CONNECT_TIMEOUT_MS = 60 * 1000;
-export const STREAM_FIRST_CHUNK_TIMEOUT_MS = 200 * 1000;
+// Configurable via STREAM_STALL_TIMEOUT_MS env var (ms). Closes #1557.
 // Parse a positive integer env override, falling back to a default.
 function envMs(name, def) {
   const raw = process.env[name];
@@ -47,7 +44,11 @@ function envMs(name, def) {
   const n = parseInt(raw, 10);
   return Number.isFinite(n) && n > 0 ? n : def;
 }
-
+export const STREAM_STALL_TIMEOUT_MS = envMs("STREAM_STALL_TIMEOUT_MS", 180 * 1000);
+// Fetch connect timeout: abort if upstream doesn't return response headers within this duration.
+// Configurable via FETCH_CONNECT_TIMEOUT_MS env var (ms). Closes #1557.
+export const FETCH_CONNECT_TIMEOUT_MS = envMs("FETCH_CONNECT_TIMEOUT_MS", 60 * 1000);
+export const STREAM_FIRST_CHUNK_TIMEOUT_MS = envMs("STREAM_FIRST_CHUNK_TIMEOUT_MS", 200 * 1000);
 
 // Default token limits
 export const DEFAULT_MAX_TOKENS = 64000;
