@@ -7,8 +7,11 @@ const CLAUDE_AGENT_TOOL_NAMES = new Set(["Agent"]);
 
 // Sanitize tool call arguments to fix bad params from non-Anthropic models
 function sanitizeToolArgs(toolName, argsJson) {
+  const cleaned = typeof argsJson === "string"
+    ? argsJson.trim().replace(/^```json\s*/i, "").replace(/```\s*$/i, "").trim()
+    : argsJson;
   try {
-    const args = JSON.parse(argsJson);
+    const args = JSON.parse(cleaned);
     const name = toolName.startsWith(CLAUDE_OAUTH_TOOL_PREFIX)
       ? toolName.slice(CLAUDE_OAUTH_TOOL_PREFIX.length)
       : toolName;
@@ -16,7 +19,7 @@ function sanitizeToolArgs(toolName, argsJson) {
     if (CLAUDE_AGENT_TOOL_NAMES.has(name)) sanitizeAgentArgs(args);
     return JSON.stringify(args);
   } catch {
-    return argsJson;
+    return cleaned;
   }
 }
 
