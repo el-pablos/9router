@@ -283,13 +283,11 @@ describe("buildKiroPayload", () => {
 });
 
 describe("buildKiroPayload Indonesian language injection", () => {
-  it("injects BAHASA INDONESIA mandate for a plain model", () => {
+  it("does NOT inject BAHASA INDONESIA mandate for a plain model", () => {
     const body = { messages: [{ role: "user", content: "Hello" }] };
     const result = buildKiroPayload("claude-sonnet-4.6", body, true, {});
     const content = result.conversationState.currentMessage.userInputMessage.content;
-    expect(content).toContain("BAHASA INDONESIA");
-    // hard-lock: no escape-hatch clause allowed
-    expect(content).not.toContain("## PENGECUALIAN");
+    expect(content).not.toContain("BAHASA INDONESIA");
   });
 
   it("injects BAHASA INDONESIA mandate for a thinking+agentic model", () => {
@@ -304,12 +302,12 @@ describe("buildKiroPayload Indonesian language injection", () => {
     expect(content).not.toContain("FILE WRITE POLICY");
   });
 
-  it("keeps the original user text intact alongside the language mandate", () => {
+  it("keeps the original user text intact for plain model (no language mandate)", () => {
     const body = { messages: [{ role: "user", content: "unique-marker-xyz" }] };
     const result = buildKiroPayload("claude-haiku-4.5", body, true, {});
     const content = result.conversationState.currentMessage.userInputMessage.content;
     expect(content).toContain("unique-marker-xyz");
-    expect(content).toContain("BAHASA INDONESIA");
+    expect(content).not.toContain("BAHASA INDONESIA");
   });
 
   it("does NOT inject any write/chunk/file-strategy policy for an -agentic model", () => {
@@ -509,13 +507,11 @@ describe("1M variant default routing (agentic / thinking / agentic+thinking)", (
 });
 
 describe("buildKiroPayload Indonesian language injection", () => {
-  it("injects BAHASA INDONESIA mandate for a plain model", () => {
+  it("does NOT inject BAHASA INDONESIA mandate for a plain model", () => {
     const body = { messages: [{ role: "user", content: "Hello" }] };
     const result = buildKiroPayload("claude-sonnet-4.6", body, true, {});
     const content = result.conversationState.currentMessage.userInputMessage.content;
-    expect(content).toContain("BAHASA INDONESIA");
-    // hard-lock: no escape-hatch clause allowed
-    expect(content).not.toContain("## PENGECUALIAN");
+    expect(content).not.toContain("BAHASA INDONESIA");
   });
 
   it("injects BAHASA INDONESIA mandate for a thinking+agentic model", () => {
@@ -530,12 +526,12 @@ describe("buildKiroPayload Indonesian language injection", () => {
     expect(content).not.toContain("FILE WRITE POLICY");
   });
 
-  it("keeps the original user text intact alongside the language mandate", () => {
+  it("keeps the original user text intact for plain model (no language mandate)", () => {
     const body = { messages: [{ role: "user", content: "unique-marker-xyz" }] };
     const result = buildKiroPayload("claude-haiku-4.5", body, true, {});
     const content = result.conversationState.currentMessage.userInputMessage.content;
     expect(content).toContain("unique-marker-xyz");
-    expect(content).toContain("BAHASA INDONESIA");
+    expect(content).not.toContain("BAHASA INDONESIA");
   });
 
   it("does NOT inject any write/chunk/file-strategy policy for an -agentic model", () => {

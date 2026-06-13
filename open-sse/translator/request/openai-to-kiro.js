@@ -694,8 +694,8 @@ export function truncateHistory(history, currentTokens, maxInputTokens) {
  *    `thinking`, OpenAI `reasoning_effort`, AMP/Cursor magic tags, and model
  *    name hints.
  *
- * 3. Language policy. `KIRO_LANGUAGE_SYSTEM_PROMPT` (Bahasa Indonesia mandate)
- *    is prepended to every request so replies default to Indonesian.
+ * 3. Language policy. `KIRO_LANGUAGE_SYSTEM_PROMPT` only injected on -agentic
+ *    models, mirroring claude-to-kiro path.
  */
 export function buildKiroPayload(model, body, stream, credentials) {
   const messages = body.messages || [];
@@ -705,7 +705,7 @@ export function buildKiroPayload(model, body, stream, credentials) {
   const temperature = body.temperature;
   const topP = body.top_p;
 
-  const { upstream: upstreamModel, thinking: modelImpliesThinking } = resolveKiroModel(model);
+  const { upstream: upstreamModel, agentic, thinking: modelImpliesThinking } = resolveKiroModel(model);
   const thinkingEnabled = modelImpliesThinking || isThinkingEnabled(body, null, model);
 
   const { history, currentMessage } = convertMessages(messages, tools, upstreamModel);
@@ -724,7 +724,7 @@ export function buildKiroPayload(model, body, stream, credentials) {
     prefixParts.push(buildThinkingSystemPrefix());
   }
   prefixParts.push(`[Context: Current time is ${timestamp}]`);
-  prefixParts.push(KIRO_LANGUAGE_SYSTEM_PROMPT);
+  if (agentic) prefixParts.push(KIRO_LANGUAGE_SYSTEM_PROMPT);
   finalContent = `${prefixParts.join("\n\n")}\n\n${finalContent}`;
 
   const payload = {
