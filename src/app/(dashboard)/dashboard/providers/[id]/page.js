@@ -979,7 +979,7 @@ export default function ProviderDetailPage() {
     const customModels = Object.entries(modelAliases)
       .filter(([alias, fullModel]) => {
         const prefix = `${providerStorageAlias}/`;
-        if (!fullModel.startsWith(prefix)) return false;
+        if (typeof fullModel !== "string" || !fullModel.startsWith(prefix)) return false;
         const modelId = fullModel.slice(prefix.length);
         if (disabledSet.has(modelId)) return false;
         // Only show if not already in hardcoded list

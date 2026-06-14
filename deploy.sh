@@ -39,8 +39,8 @@ case "${TARGET}" in
   pm2)
     # Step 1: Build
     log "Step 1/4 — Building..."
-    npm install --legacy-peer-deps
-    npm run build
+    NODE_OPTIONS="--max-old-space-size=3072" npm install --legacy-peer-deps
+    NODE_OPTIONS="--max-old-space-size=3072" npm run build
 
     # Step 2: Sync static assets to standalone output
     # Next.js standalone build does NOT include static/public — must copy manually
@@ -124,14 +124,14 @@ case "${TARGET}" in
 
   build)
     log "Building for production (no deployment)..."
-    npm install --legacy-peer-deps
-    npm run build
+    NODE_OPTIONS="--max-old-space-size=3072" npm install --legacy-peer-deps
+    NODE_OPTIONS="--max-old-space-size=3072" npm run build
     log "Build complete! Output in .next/standalone/"
     ;;
 
   test)
     log "Running test suite..."
-    npm run build
+    NODE_OPTIONS="--max-old-space-size=3072" npm run build
     npx vitest run
     log "Tests complete!"
     ;;
