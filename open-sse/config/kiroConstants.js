@@ -18,7 +18,7 @@
 export const KIRO_AGENTIC_SUFFIX = "-agentic";
 export const KIRO_THINKING_SUFFIX = "-thinking"; 
 
-export const KIRO_THINKING_BUDGET_DEFAULT = 32000; // tokens
+export const KIRO_THINKING_BUDGET_DEFAULT = 64000; // tokens
 
 export const KIRO_LANGUAGE_SYSTEM_PROMPT = `
 # AGENTIC EXECUTION POLICY
